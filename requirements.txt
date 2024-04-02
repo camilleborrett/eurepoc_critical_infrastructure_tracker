@@ -1,0 +1,10 @@
+pandas
+plotly
+dash
+dash-bootstrap-components
+SQLAlchemy
+psycopg2-binary
+openpyxl
+dash-mantine-components
+dash-iconify
+gunicorn
