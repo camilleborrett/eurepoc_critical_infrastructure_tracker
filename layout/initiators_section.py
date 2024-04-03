@@ -69,10 +69,14 @@ initiators_section = dbc.Row([
                 style={"text-align": "center", "padding-top": "20px", "padding-bottom": "20px", "font-weight": "700"}),
             html.H3("What are the main threat actors targeting critical infrastructure? "),
             html.P(
-                "This section focused on the main targeted critical infrastructure sectors. The bar chart shows the aggregate number \
-                of attacks recorded by EuRepoC per sector since 2000. The timeline shows the rolling average number of attacks \
-                publicly disclosed over 30 days since January 2023, along with the rolling average intensity of these \
-                attacks also over 30 days. Click on the bars to display and compare the timeline for each sector.",
+                "Identifying the perpetrators of cyberattacks is a complex yet vital aspect of cybersecurity. \
+                As part of our broader data collection methodolgy, we track attribution reports and update our data \
+                as new information emerges. Although a large proportion of attacks remain unattributed, our data shows \
+                the diverse array of threat actors that target critical infrastructure sectors, \
+                ranging from advanced persistent threats (APTs), often state or state-sponsored groups, to independent \
+                hacker groups and criminal networks. The threat landscape also differs from sector to sector \
+                and overtime. The bar chart below displays the different types of inititiators by country of origin \
+                and a list of the most proliferic threat actors. Use the buttons to compare sectors and/or years.",
                 style={"text-align": "left", "padding": "10px 150px 10px 0px", "font-weight": "400"}
             )
         ])
@@ -100,19 +104,34 @@ initiators_section = dbc.Row([
     html.Div(html.Hr(style={"width": "50%"}), style={"text-align": "center", "padding": "20px"}),
     dbc.Row([
         dbc.Col([
-            html.H3("How do cyber attacks against critical infrastructure fit into the broader geopolitical context?"),
-            html.P(
-                "This section focused on the main targeted critical infrastructure sectors. The bar chart shows the aggregate number \
-                of attacks recorded by EuRepoC per sector since 2000. The timeline shows the rolling average number of attacks \
-                publicly disclosed over 30 days since January 2023, along with the rolling average intensity of these \
-                attacks also over 30 days. Click on the bars to display and compare the timeline for each sector.",
-                style={"text-align": "left", "padding": "10px 150px 20px 0px", "font-weight": "400"}
+            html.H3("How do cyberattacks against critical infrastructure fit into the broader geopolitical context?"),
+            html.P([
+                html.Span("In many cases, cyberattacks are not isolated incidents but linked to broader geopolitical \
+                (offline) conflicts. Since January 2023, EuRepoC data tags cyberattacks linked to offline conflicts. \
+                The conflict names are based on the "),
+                html.A("Heidelberg Institute for International Conflict Research (HIIK)",
+                       href="https://hiik.de/?lang=en", target="_blank", style={"color": "black"}),
+                html.Span(" Conflict Barometer. The pie chart shows the number of incidents linked to different offline conflicts \
+                for incidents added to the database since January 2023. The horizontal bar chart shows the proportion \
+                of these incidents impacting each critical infrastructure sector, while the vertical bar chart shows \
+                the types of inititiators attributed to these incidents. Click on a a section of the pie chart \
+                to filter the data across the other charts for the chosen conflict. Similarly, by clicking on \
+                a specific sector in the horizontal bar chart, you can view the attributed initiators specific \
+                to that sector and selected conflict."),
+            ], style={"text-align": "left", "padding": "10px 150px 20px 0px", "font-weight": "400"}
             )
         ]),
     ]),
     dbc.Row([
         dbc.Col([
             html.H5(id="initiators-section-conflicts-main-title", style={"text-align": "center"}),
+            html.P([
+                DashIconify(icon="mdi:cursor-default-click-outline", width=25, rotate=1),
+                html.I(
+                    " Click on a section of the pie chart to filter the data across the other charts for the chosen conflict.",
+                    style={"font-size": "0.8rem"}
+                ),
+            ], style={"text-align": "center"}),
             dcc.Graph("initiators-section-conflicts-main-graph",
                       config=graph_config("EuRepoC-number-of-cyber-attacks-linked-to-offline-conflicts"))
         ], md=6),
@@ -120,6 +139,13 @@ initiators_section = dbc.Row([
             dbc.Row([
                 dbc.Col([
                     html.H5(id="initiators-section-conflicts-sectors-title", style={"text-align": "center"}),
+                html.P([
+                    DashIconify(icon="mdi:cursor-default-click-outline", width=25, rotate=1),
+                    html.I(
+                    " Click on a sector to display the attributed inititaors for the selected sector and conflict.",
+                    style={"font-size": "0.8rem"}
+                ),
+                ], style={"text-align": "center"}),
                     dcc.Graph("initiators-section-conflicts-sectors-graph",
                               config=graph_config("EuRepoC-sectors-targeted-by-cyber-attacks-linked-to-offline-conflicts"))
                 ]),

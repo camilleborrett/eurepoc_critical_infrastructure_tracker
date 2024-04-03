@@ -115,7 +115,7 @@ types_section = dbc.Row([
             html.H2(
                 id="types-section-main-title",
                 style={"text-align": "center", "padding-top": "20px", "padding-bottom": "20px", "font-weight": "700"}),
-            html.H3("What are the most frequent types of cyber attacks against each critical infrastructure sector? "),
+            html.H3("What are the most frequent types of cyberattacks against each critical infrastructure sector? "),
             html.P(
                 "This section focused on the main targeted critical infrastructure sectors. The bar chart shows the aggregate number \
                 of attacks recorded by EuRepoC per sector since 2000. The timeline shows the rolling average number of attacks \
@@ -161,10 +161,14 @@ types_section = dbc.Row([
         dbc.Col([
             html.H3("What are the most frequent techniques used by threat actors to gain access?"),
             html.P(
-                "This section focused on the main targeted critical infrastructure sectors. The bar chart shows the aggregate number \
-                of attacks recorded by EuRepoC per sector since 2000. The timeline shows the rolling average number of attacks \
-                publicly disclosed over 30 days since January 2023, along with the rolling average intensity of these \
-                attacks also over 30 days. Click on the bars to display and compare the timeline for each sector.",
+                "When it comes to cyberattacks, the initial access phase is crucial. \
+                This is the stage where attackers first penetrate a network or system, or in other words \
+                ‘gain a foot in the door’. Understanding this phase is essential for bolstering defenses \
+                against cyber threats. The MITRE ATT&CK framework, a globally recognised knowledge base, \
+                categorises various tactics and techniques used by threat actors in cyber conflicts. \
+                This graphs shows the most frequent ‘Initial Access’ techniques defined under the MITRE ATT&CK \
+                framework that adverseries use to gain their initial foothold within the network of \
+                critical infrastructure organisations.",
                 style={"text-align": "left", "padding": "10px 150px 20px 0px", "font-weight": "400"}
             )
         ]),

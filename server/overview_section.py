@@ -29,8 +29,8 @@ def aggregate_plot_layout(grid_title):
 
 
 evolution_plot_layout = {
-    "xaxis_title": "",
-    "yaxis_title": 'Count',
+    "xaxis_title": "Date of disclosure",
+    "yaxis_title": '30 day rolling average',
     "legend_title": "",
     "plot_bgcolor": 'rgba(0,0,0,0)',
     "paper_bgcolor": 'rgba(0,0,0,0)',
@@ -115,8 +115,8 @@ def generate_plot(data, fig, moving_average=False, selected_sector=None, len_sec
         color = "#002C38"
         visibility = True
 
-    hovertemplate_count = 'Date: %{x}<br>Incident count: %{text}<br>Moving average over 30 days: %{y:.1f}<extra></extra>'
-    hovertemplate_intensity = 'Date: %{x}<br>Mean intensity: %{text:.1f}<br>Moving average over 30 days: %{y:.1f}<extra></extra>'
+    hovertemplate_count = 'Date: %{x}<br>Moving average over 30 days: %{y:.1f}<br>Incident count: %{text}<extra></extra>'
+    hovertemplate_intensity = 'Date: %{x}<br>Moving average over 30 days: %{y:.1f}<br>Mean intensity: %{text:.1f}<extra></extra>'
 
     fig.add_trace(
         go.Scatter(
@@ -124,7 +124,7 @@ def generate_plot(data, fig, moving_average=False, selected_sector=None, len_sec
             y=data[col_name_count],
             mode='lines',
             text=data['id'],
-            name=name,
+            name=f'{name} - 30 day average',
             line=dict(color=color),
             hovertemplate=hovertemplate_count
         ),

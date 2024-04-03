@@ -4,6 +4,7 @@ from layout.intro_section import intro_section
 from layout.overview_section import overview_section
 from layout.types_section import types_section
 from layout.initiators_section import initiators_section
+from layout.footer import footer
 from dash import html
 import dash_mantine_components as dmc
 from dash_iconify import DashIconify
@@ -35,5 +36,6 @@ def serve_layout():
             ),
             href="#intro-section"
         ),
+        footer
     ], fluid=True)
     return full_layout

@@ -7,20 +7,20 @@ navbar = dbc.NavbarSimple(
         dbc.NavItem(html.A(
             "Overview",
             href="#overview-section",
-            style={"color": "black", "font-weight": "600", "text-decoration": "none"}
+            style={"color": "black", "font-weight": "650", "text-decoration": "none", "font-size": "1.3em"}
         )),
         dbc.NavItem(html.A(
             "Type of incidents",
             href="#types-section",
-            style={"color": "black", "font-weight": "600", "text-decoration": "none"}
+            style={"color": "black", "font-weight": "650", "text-decoration": "none", "font-size": "1.3em"}
         )),
         dbc.NavItem(html.A(
             "Initiators",
             href="#initiators-section",
-            style={"color": "black", "font-weight": "600", "text-decoration": "none"}
+            style={"color": "black", "font-weight": "650", "text-decoration": "none", "font-size": "1.3em"}
         )),
     ],
-    brand=html.Img(src="./assets/EuRepoC_logo_full.png", height="60px"),
+    brand=html.Img(src="./assets/EuRepoC_logo.svg", height="60px"),
     brand_href="https://eurepoc.eu",
     color="rgba(0, 0, 0, 0);",
     links_left=True,

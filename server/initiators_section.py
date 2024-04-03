@@ -362,18 +362,18 @@ class Initiators:
                     fig, filtered_data = conflict_sectors_graph(callback_data)
                     return (fig,
                             filtered_data.to_json(orient='records'),
-                            f"Critical infrastructure sectors targeted by cyber attacks linked to offline conflicts in {selected_country}")
+                            f"Sectors targeted by cyberattacks linked to offline conflicts in {selected_country}")
 
                 if click_data:
                     conflict_name = click_data['points'][0]['label']
                     fig, filtered_data = conflict_sectors_graph(callback_data, click_data=True, conflict_name=conflict_name)
-                    return fig, filtered_data.to_json(orient='records'), f"Sectors targeted by cyber attacks linked to the {conflict_name} offline conflict in {selected_country}"
+                    return fig, filtered_data.to_json(orient='records'), f"Sectors targeted by cyberattacks linked to the {conflict_name} offline conflict in {selected_country}"
 
                 else:
                     fig, filtered_data = conflict_sectors_graph(callback_data)
                     return (fig,
                             filtered_data.to_json(orient='records'),
-                            f"Sectors targeted by cyber attacks linked to offline conflicts in {selected_country}")
+                            f"Sectors targeted by cyberattacks linked to offline conflicts in {selected_country}")
 
     def generate_initiators_conflict_graph(self):
         @self.app.callback(
@@ -487,4 +487,4 @@ class Initiators:
                     selected_conflict_title = "offline conflicts"
 
                 return (fig,
-                        f"Initiators of cyber attacks linked to {selected_conflict_title} against {selected_sector.lower()} in {selected_country}")
+                        f"Initiators of cyberattacks linked to {selected_conflict_title} against {selected_sector.lower()} in {selected_country}")
