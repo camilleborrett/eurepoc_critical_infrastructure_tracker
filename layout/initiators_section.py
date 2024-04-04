@@ -2,7 +2,7 @@ import dash_bootstrap_components as dbc
 from dash import html, dcc
 import dash_mantine_components as dmc
 from dash_iconify import DashIconify
-from server.utils import graph_config
+from server.utils import graph_config, generate_year_slider
 
 
 button_group = dbc.ButtonGroup(
@@ -34,31 +34,7 @@ button_group = dbc.ButtonGroup(
 )
 
 
-year_slider = dcc.Slider(
-    id='year-slider',
-    min=2010,
-    max=2025,
-    value=2025,
-    marks={
-        2010: {'label': '2010'},
-        2011: {'label': ''},
-        2012: {'label': '2012'},
-        2013: {'label': ''},
-        2014: {'label': '2014'},
-        2015: {'label': ''},
-        2016: {'label': '2016'},
-        2017: {'label': ''},
-        2018: {'label': '2018'},
-        2019: {'label': ''},
-        2020: {'label': '2020'},
-        2021: {'label': ''},
-        2022: {'label': '2022'},
-        2023: {'label': ''},
-        2024: {'label': '2024'},
-        2025: {'label': 'All Years', 'style': {'transform': 'rotate(-45deg)', 'white-space': 'nowrap'}}
-    },
-    step=1
-)
+year_slider = generate_year_slider("initiators-section-year-slider")
 
 
 initiators_section = dbc.Row([

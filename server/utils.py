@@ -1,4 +1,5 @@
 import plotly.graph_objects as go
+from dash import dcc
 
 
 sectors_color_map = {
@@ -30,31 +31,52 @@ initiator_types_color_map = {
 
 
 incident_types_color_map = {
-    "Data theft": "rgba(0,44,56,1)",
-    "DDoS/Defacement": "rgba(204,1,48,1)",
-    "Ransomware": "rgba(137,189,158,1)",
-    "Wiper": "rgba(51,134,157,1)",
-    "Hack and leak": "rgba(244,185,66,1)",
-    "Other": "rgba(157,152,161,1)",
+    "full_opacity": {
+        "Data theft": "rgba(0,44,56,1)",
+        "DDoS/Defacement": "rgba(204,1,48,1)",
+        "Ransomware": "rgba(137,189,158,1)",
+        "Wiper": "rgba(51,134,157,1)",
+        "Hack and leak": "rgba(244,185,66,1)",
+        "Other": "rgba(157,152,161,1)"
+    },
+    "low_opacity": {
+        "Data theft": "rgba(0,44,56,0.4)",
+        "DDoS/Defacement": "rgba(204,1,48,0.4)",
+        "Ransomware": "rgba(137,189,158,0.4)",
+        "Wiper": "rgba(51,134,157,0.4)",
+        "Hack and leak": "rgba(244,185,66,0.4)",
+        "Other": "rgba(157,152,161,0.4)"
+    }
 }
 
 
-incident_types_symbol_map = {
-    "Health": "cross",
-    "Energy": "star-triangle-down",
-    "Finance": "hexagon",
-    "Telecommunications": "square",
-    "Transportation": "diamond",
-    "Defence industry": "diamond-wide",
-    "Research": "hourglass",
-    "Critical Manufacturing": "triangle-up",
-    "Digital Provider": "circle",
-    "Food": "triangle-ne",
-    "Water": "star",
-    "Chemicals": "x",
-    "Space": "hexagram",
-    "Waste Water Management": "asterisk",
-}
+def generate_year_slider(id_name=None):
+    year_slider = dcc.Slider(
+        id=id_name,
+        min=2010,
+        max=2025,
+        value=2025,
+        marks={
+            2010: {'label': '2010'},
+            2011: {'label': ''},
+            2012: {'label': '2012'},
+            2013: {'label': ''},
+            2014: {'label': '2014'},
+            2015: {'label': ''},
+            2016: {'label': '2016'},
+            2017: {'label': ''},
+            2018: {'label': '2018'},
+            2019: {'label': ''},
+            2020: {'label': '2020'},
+            2021: {'label': ''},
+            2022: {'label': '2022'},
+            2023: {'label': ''},
+            2024: {'label': '2024'},
+            2025: {'label': 'All Years', 'style': {'transform': 'rotate(-45deg)', 'white-space': 'nowrap'}}
+        },
+        step=1
+    )
+    return year_slider
 
 
 def filter_data(df, selected_country):

@@ -1,51 +1,122 @@
 from dash.dependencies import Input, Output, State
-import dash
+from dash import ctx
 import plotly.graph_objects as go
 import re
-from server.utils import filter_data, empty_figure, incident_types_color_map, incident_types_symbol_map
+import json
+from server.utils import filter_data, empty_figure, incident_types_color_map
 
 
 chosen_types = ["Data theft", "DDoS/Defacement", "Ransomware", "Wiper", "Hack and leak", "Other"]
 
 
-evolution_plot_layout = {
-    "xaxis_title": "",
-    "yaxis_title": '',
-    "legend_title": "",
-    "plot_bgcolor": 'rgba(0,0,0,0)',
-    "paper_bgcolor": 'rgba(0,0,0,0)',
-    "xaxis": {
-        "showgrid": True,
-        "showline": True,
-        "showticklabels": True,
-        "zeroline": False,
-        "linecolor": 'rgba(225,225,225,0.4)',
-        "gridcolor": 'rgba(225,225,225,0.4)',
-        "rangeslider": {
-            "bgcolor": 'rgba(225,225,225,0.4)',
-            "bordercolor": 'rgba(225,225,225,0.5)',
-        },
-        "rangeselector": {
-            "buttons": list([
-                dict(count=1, label="Last 30 days", step="month", stepmode="backward"),
-                dict(count=6, label="Last 6 months", step="month", stepmode="backward"),
-                dict(count=1, label="Year to date", step="year", stepmode="todate"),
-                dict(count=1, label="Last year", step="year", stepmode="backward"),
-                dict(label="All time", step="all")
-            ]),
-        },
-    },
-    "yaxis": {
-        "showgrid": True,
-        "showline": True,
-        "showticklabels": True,
-        "zeroline": False,
-        "linecolor": 'rgba(225,225,225,0.4)',
-        "gridcolor": 'rgba(225,225,225,0.4)',
-    },
-    "margin": {'l': 10, 'r': 10, 't': 10, 'b': 10},
-    "height": 430
-}
+intell_category_array_list = [
+    'No data breach/corruption/leak',
+    'Minor data breach',
+    'Moderate data breach',
+    'Significant data breach',
+    'Major data breach',
+    'Unknown'
+]
+
+
+functional_category_array_list = [
+    'No system interference/disruption',
+    'Day (< 24h)',
+    "Days (< 7 days)",
+    'Weeks (< 4 weeks)',
+    'Months',
+    'Not available'
+]
+
+
+def generate_impact_graph(data=None, clicked_category=None, clicked_type=None, click_data=None):
+    if click_data:
+        data = data[
+            (data["receiver_subcategory"] == clicked_category) &
+            (data["type_clean"] == clicked_type)
+            ]
+
+    df_group = data.groupby("impact").agg({"id": "nunique"}).reset_index()
+    df_group = df_group.sort_values(by="id", ascending=False)
+
+    fig = go.Figure(data=[go.Bar(x=df_group["impact"], y=df_group["id"])])
+    fig.update_traces(marker_color='#668088', marker_line_color='#002C38',
+                      marker_line_width=1.5, opacity=1, hovertemplate='%{x}<br>%{y} incidents<extra></extra>')
+
+    fig.update_layout(
+        plot_bgcolor='rgba(0,0,0,0)',
+        paper_bgcolor='rgba(0,0,0,0)',
+        barcornerradius=8,
+        yaxis=dict(
+            title='Number of incidents',
+            showgrid=True,
+            showline=True,
+            showticklabels=True,
+            zeroline=False,
+            linecolor='rgba(225,225,225,0.9)',
+            gridcolor='rgba(225,225,225,0.9)',
+        ),
+        margin={'l': 10, 'r': 10, 't': 10, 'b': 10},
+        height=300
+    )
+
+    return fig
+
+
+def generate_impact_type_graph(data=None, impact_type=None, text_column=None, marker_color=None, marker_line_color=None, category_array_list=None):
+    if text_column:
+        agg_data = data.groupby([impact_type, text_column]).agg({"id": "nunique"}).reset_index()
+        hover_texts = agg_data[text_column]
+    else:
+        agg_data = data.groupby(impact_type).agg({"id": "nunique"}).reset_index()
+        hover_texts = agg_data['id']
+
+    fig = go.Figure()
+    fig.add_trace(go.Bar(
+        x=agg_data[impact_type],
+        y=agg_data['id'],
+        hovertext=hover_texts,
+        marker_color=marker_color,
+        marker_line_color=marker_line_color,
+        marker_line_width=1.5,
+        hovertemplate='<b>%{x}</b><br>%{hovertext}<br>%{y} incidents<extra></extra>' if text_column else '<b>%{x}</b><br>%{y} incidents<extra></extra>',
+        opacity=1
+    ))
+
+    fig.update_layout(
+        plot_bgcolor='rgba(0,0,0,0)',
+        paper_bgcolor='rgba(0,0,0,0)',
+        xaxis=dict(
+            categoryorder='array',
+            categoryarray=category_array_list
+        ),
+        yaxis=dict(
+            showgrid=True,
+            showline=True,
+            showticklabels=True,
+            zeroline=False,
+            linecolor='rgba(225,225,225,0.9)',
+            gridcolor='rgba(225,225,225,0.9)',
+        ),
+        margin={'l': 10, 'r': 10, 't': 10, 'b': 10},
+        bargap=0.1,
+        barcornerradius=8,
+        height=300
+    )
+
+    return fig
+
+
+def filter_data_click_data(data=None, category=None, type=None, last_selected=None, impact_click_data=None):
+    if last_selected != "null" and impact_click_data:
+        filtered_data = data[(data["receiver_subcategory"] == category) & (data["type_clean"] == type) & (data["impact"] == impact_click_data)]
+    elif last_selected == "null" and impact_click_data:
+        filtered_data = data[data["impact"] == impact_click_data]
+    elif last_selected != "null" and not impact_click_data:
+        filtered_data = data[(data["receiver_subcategory"] == category) & (data["type_clean"] == type)]
+    else:
+        filtered_data = data
+    return filtered_data
 
 
 class Types:
@@ -55,90 +126,68 @@ class Types:
             df=None,
             intensity=False,
             aggregate_graph_id=None,
-            bar_index_store_id=None,
-            evolution_graph_id=None,
+            impact_graph_id=None,
+            intelligence_impact_graph_id=None,
+            functional_impact_graph_id=None,
             techniques_dropdown_sectors_id=None,
             techniques_dropdown_types_id=None,
             techniques_graph_id=None,
-            reset_button=None
+            reset_button=None,
+            last_selected_stack=None
     ):
         self.app = app
         self.df = df
         self.intensity = intensity
         self.aggregate_graph_id = aggregate_graph_id
-        self.bar_index_store_id = bar_index_store_id
-        self.evolution_graph_id = evolution_graph_id
+        self.impact_graph_id = impact_graph_id
+        self.intelligence_impact_graph_id = intelligence_impact_graph_id
+        self.functional_impact_graph_id = functional_impact_graph_id
         self.techniques_graph_id = techniques_graph_id
         self.techniques_dropdown_sectors_id = techniques_dropdown_sectors_id
         self.techniques_dropdown_types_id = techniques_dropdown_types_id
         self.reset_button = reset_button
+        self.last_selected = None
+        self.last_selected_stack = last_selected_stack
 
         self.initialize_callbacks()
 
     def initialize_callbacks(self):
-        self.bar_selection()
         self.aggregate_graph()
-        self.evolution_graph()
+        self.impact_types_graphs()
         self.techniques_graph()
-
-    def bar_selection(self):
-        @self.app.callback(
-            [Output(self.bar_index_store_id, 'data')],
-            [Input(self.aggregate_graph_id, 'clickData'),
-             Input('selected-country', 'value'),
-             Input(self.reset_button, 'n_clicks')],
-            [State(self.bar_index_store_id, 'data')]
-        )
-        def update_selected_stacks(clickdata, selected_country, reset_button, selected_stacks_index):
-            if selected_stacks_index is None:
-                selected_stacks_index = []
-
-            ctx = dash.callback_context
-
-            input_id = ctx.triggered[0]['prop_id'].split('.')[0]
-
-            if input_id == 'selected-country':
-                return [[]]
-
-            elif input_id == self.reset_button:
-                return [[]]
-
-            elif clickdata:
-                hover_info = clickdata['points'][0]['hovertext']
-                type_match = re.search(r"Type: (.*?)<br>", hover_info)
-                sector_match = re.search(r"Sector: (.*?)<br>", hover_info)
-                clicked_identifier = f"{type_match.group(1)}; {sector_match.group(1)}"
-
-                if clicked_identifier in selected_stacks_index:
-                    selected_stacks_index.remove(clicked_identifier)
-                else:
-                    selected_stacks_index.append(clicked_identifier)
-
-                return [selected_stacks_index]
-
-            return [[]]
 
     def aggregate_graph(self):
         @self.app.callback(
             Output(self.aggregate_graph_id, "figure"),
+            Output(self.impact_graph_id, "figure"),
+            Output(self.last_selected_stack, "data"),
             [Input("selected-country", "value"),
-             Input(self.bar_index_store_id, 'data')]
+             Input(self.aggregate_graph_id, 'clickData'),
+             Input(self.reset_button, 'n_clicks')],
+            [State(self.aggregate_graph_id, 'figure')]
         )
-        def update_aggregate_graph(selected_country, selected_stacks):
-            df_clean = self.df.copy(deep=True)
-            df_clean = filter_data(df_clean, selected_country)
-            if df_clean.empty:
-                return empty_figure()
+        def update_aggregate_graph(selected_country, clickData, n_clicks, aggregate_fig):
+            df_filtered = self.df.copy(deep=True)
+            df_filtered = filter_data(df_filtered, selected_country)
+
+            if ctx.triggered[0]['prop_id'] == self.reset_button:
+                self.last_selected = None
+
+            if df_filtered.empty:
+                return empty_figure(), empty_figure(), []
             else:
-                df_clean = df_clean.groupby(["receiver_subcategory", "type_clean"]).agg(
+                df_clean = df_filtered.groupby(["receiver_subcategory", "type_clean"]).agg(
                     {"id": "nunique", "weighted_intensity": "mean"}).reset_index()
                 grouped_df = df_clean.groupby(['receiver_subcategory', 'type_clean']).sum().reset_index()
                 total_count_per_sector = grouped_df.groupby('receiver_subcategory')['id'].sum()
-                grouped_df = grouped_df.merge(total_count_per_sector, on='receiver_subcategory', suffixes=('', '_total'))
+                grouped_df = grouped_df.merge(total_count_per_sector, on='receiver_subcategory',
+                                              suffixes=('', '_total'))
                 grouped_df['percentage'] = grouped_df['id'] / grouped_df['id_total'] * 100
                 grouped_df = grouped_df.sort_values(by='id_total', ascending=True)
-                pivot_df = grouped_df.pivot(index='receiver_subcategory', columns='type_clean', values='percentage').fillna(0)
-                pivot_df = pivot_df[[incident_type for incident_type in chosen_types if incident_type in pivot_df.columns]]
+                pivot_df = grouped_df.pivot(index='receiver_subcategory', columns='type_clean',
+                                            values='percentage').fillna(0)
+                pivot_df = pivot_df[
+                    [incident_type for incident_type in chosen_types if incident_type in pivot_df.columns]]
                 pivot_df = pivot_df.reindex(total_count_per_sector.sort_values(ascending=True).index)
                 counts_dict = {(row['receiver_subcategory'], row['type_clean']): row['id']
                                for _, row in grouped_df.iterrows()}
@@ -154,13 +203,13 @@ class Types:
                             for sector, percentage in zip(pivot_df.index, pivot_df[incident_type])
                         ],
                         hoverinfo='text',
-                        marker=dict(color=incident_types_color_map[incident_type]),
+                        marker=dict(color=incident_types_color_map["full_opacity"][incident_type]),
                     ) for incident_type in pivot_df.columns
                 ]
 
-                fig = go.Figure(data=bars)
+                aggregate_fig = go.Figure(data=bars)
 
-                fig.update_layout(
+                aggregate_fig.update_layout(
                     barmode='stack',
                     title='',
                     xaxis_title='Percentage',
@@ -171,72 +220,110 @@ class Types:
                     plot_bgcolor='rgba(0,0,0,0)',
                     paper_bgcolor='rgba(0,0,0,0)',
                     margin={'l': 10, 'r': 10, 't': 10, 'b': 10},
-                    height=455
+                    height=600
                 )
 
-                return fig
+                impact_fig = generate_impact_graph(data=df_filtered)
 
-    def evolution_graph(self):
+                if clickData:
+                    clicked_category = clickData['points'][0]['y']
+                    hover_info = clickData['points'][0]['hovertext']
+                    type_match = re.search(r"Type: (.*?)<br>", hover_info)
+                    clicked_type = type_match.group(1) if type_match else None
+
+                    if [clicked_type, clicked_category] == self.last_selected:
+                        for i, trace in enumerate(aggregate_fig['data']):
+                            trace['marker']['color'] = [incident_types_color_map["full_opacity"][trace['name']] for _ in
+                                                        trace['y']]
+                        self.last_selected = None
+                        impact_fig = generate_impact_graph(
+                            data=df_filtered
+                        )
+                    else:
+                        highlight_color = incident_types_color_map["full_opacity"][clicked_type]
+                        for i, trace in enumerate(aggregate_fig['data']):
+                            if trace['name'] == clicked_type:
+                                trace['marker']['color'] = [
+                                    highlight_color if category == clicked_category else
+                                    incident_types_color_map["low_opacity"][
+                                        clicked_type]
+                                    for category in trace['y']
+                                ]
+                            else:
+                                trace['marker']['color'] = [
+                                    incident_types_color_map["low_opacity"][trace['name']] for _ in trace['y']
+                                ]
+                        self.last_selected = [clicked_type, clicked_category]
+                        impact_fig = generate_impact_graph(
+                            data=df_filtered,
+                            clicked_category=clicked_category,
+                            clicked_type=clicked_type,
+                            click_data=True
+                        )
+
+                return aggregate_fig, impact_fig, json.dumps(self.last_selected)
+
+    def impact_types_graphs(self):
         @self.app.callback(
-            Output(self.evolution_graph_id, 'figure'),
-            Input('selected-country', 'value'),
-            Input(self.bar_index_store_id, 'data'),
+            Output(self.intelligence_impact_graph_id, 'figure'),
+            Output(self.functional_impact_graph_id, 'figure'),
+            [Input('selected-country', 'value'),
+             Input(self.aggregate_graph_id, 'clickData'),
+             Input(self.impact_graph_id, 'clickData'),
+             Input(self.last_selected_stack, 'data'),
+             Input(self.reset_button, 'n_clicks')],
         )
-        def generate_timeline(selected_country, selected_bars):
-            callback_data = self.df.copy(deep=True)
-            callback_data = filter_data(callback_data, selected_country)
-            if callback_data.empty:
-                return empty_figure()
-            else:
-                fig = go.Figure()
-                if selected_bars and len(selected_bars) > 0:
-                    for bar in selected_bars:
-                        selected_type, selected_sector = [x.strip() for x in bar.split(";")]
-                        sector_data = callback_data[callback_data["type_clean"] == selected_type]
-                        sector_data = sector_data[sector_data["receiver_subcategory"] == selected_sector]
-                        sector_data = sector_data.groupby(['added_to_db']).agg({"id": "nunique", "weighted_intensity": "mean"}).reset_index()
-                        sector_data['value_moving_avg'] = sector_data['id'].rolling(window=30, min_periods=1).mean()
-                        sector_data['intensity_moving_avg'] = sector_data['weighted_intensity'].rolling(window=30, min_periods=1).mean()
-                        hovertemplate_count = 'Date: %{x}<br>Incident count: %{text}<br>Moving average over 30 days: %{y:.1f}<extra></extra>'
-                        fig.add_trace(
-                            go.Scatter(
-                                x=sector_data['added_to_db'],
-                                y=sector_data['value_moving_avg'],
-                                mode='lines+markers',
-                                name=f'{selected_sector} - {selected_type}',
-                                text=sector_data['id'],
-                                line=dict(color=incident_types_color_map[selected_type], width=1, dash='dash'),
-                                marker=dict(color=incident_types_color_map[selected_type], symbol=incident_types_symbol_map[selected_sector], size=7),
-                                hovertemplate=hovertemplate_count
-                            )
-                        )
-                        fig.update_layout(showlegend=True)
-                        fig.update_xaxes(rangeslider_visible=True)
-                        fig.update_layout(**evolution_plot_layout)
-                else:
-                    fig = go.Figure()
-                    callback_data = callback_data.groupby(['added_to_db', "type_clean"]).agg(
-                        {"id": "nunique", "weighted_intensity": "mean"}).reset_index()
-                    callback_data['value_moving_avg'] = callback_data['id'].rolling(window=30, min_periods=1).mean()
-                    callback_data['intensity_moving_avg'] = callback_data['weighted_intensity'].rolling(window=30, min_periods=1).mean()
-                    hovertemplate_count = 'Date: %{x}<br>Incident count: %{text}<br>Moving average over 30 days: %{y:.1f}<extra></extra>'
-                    for incident_type in callback_data['type_clean'].unique():
-                        fig.add_trace(
-                            go.Scatter(
-                                x=callback_data[callback_data['type_clean'] == incident_type]['added_to_db'],
-                                y=callback_data[callback_data['type_clean'] == incident_type]['value_moving_avg'],
-                                mode='lines',
-                                text=callback_data[callback_data['type_clean'] == incident_type]['id'],
-                                name=incident_type,
-                                marker=dict(color=incident_types_color_map[incident_type]),
-                                hovertemplate=hovertemplate_count
-                            )
-                        )
-                    fig.update_layout(showlegend=True)
-                    fig.update_xaxes(rangeslider_visible=True)
-                    fig.update_layout(**evolution_plot_layout)
+        def generate_impact_types_graph(selected_country, aggregate_graph_click_data, impact_graph_click_data, last_selected, n_clicks):
+            df_clean = self.df.copy(deep=True)
+            df_clean = filter_data(df_clean, selected_country)
 
-                return fig
+            if self.reset_button == ctx.triggered_id:
+                impact_graph_click_data = None
+                aggregate_graph_click_data = None
+
+            if self.aggregate_graph_id == ctx.triggered_id:
+                impact_graph_click_data = None
+
+            if aggregate_graph_click_data:
+                clicked_category = aggregate_graph_click_data['points'][0]['y']
+                hover_info = aggregate_graph_click_data['points'][0]['hovertext']
+                type_match = re.search(r"Type: (.*?)<br>", hover_info)
+                clicked_type = type_match.group(1) if type_match else None
+            else:
+                clicked_category = None
+                clicked_type = None
+
+            if impact_graph_click_data:
+                selected_impact = impact_graph_click_data['points'][0]['x']
+            else:
+                selected_impact = None
+
+            df_clean = filter_data_click_data(
+                data=df_clean,
+                category=clicked_category,
+                type=clicked_type,
+                last_selected=last_selected,
+                impact_click_data=selected_impact
+            )
+
+            intell_fig = generate_impact_type_graph(
+                data=df_clean,
+                impact_type="intelligence_impact",
+                text_column="intelligence_impact_text",
+                marker_color='#e06783',
+                marker_line_color='#cc0130',
+                category_array_list=intell_category_array_list
+            )
+
+            functional_fig = generate_impact_type_graph(
+                data=df_clean,
+                impact_type="functional_impact",
+                marker_color='#99c3ce',
+                marker_line_color='#33869d',
+                category_array_list=functional_category_array_list
+            )
+
+            return intell_fig, functional_fig
 
     def techniques_graph(self):
         @self.app.callback(

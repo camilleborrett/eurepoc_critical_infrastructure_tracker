@@ -2,7 +2,7 @@ import dash_bootstrap_components as dbc
 from dash import html, dcc
 import dash_mantine_components as dmc
 from dash_iconify import DashIconify
-from server.utils import graph_config
+from server.utils import graph_config, generate_year_slider
 
 
 initial_access_techniques = [
@@ -109,6 +109,9 @@ mitre_accordion = dmc.Accordion(
 )
 
 
+year_slider = generate_year_slider("types-section-year-slider")
+
+
 types_section = dbc.Row([
     dbc.Row([
         dbc.Col([
@@ -121,28 +124,48 @@ types_section = dbc.Row([
                 of attacks recorded by EuRepoC per sector since 2000. The timeline shows the rolling average number of attacks \
                 publicly disclosed over 30 days since January 2023, along with the rolling average intensity of these \
                 attacks also over 30 days. Click on the bars to display and compare the timeline for each sector.",
-                style={"text-align": "left", "padding": "10px 150px 20px 0px", "font-weight": "400"}
-            )
+                style={"text-align": "left", "padding": "10px 150px 0px 0px", "font-weight": "400"}
+            ),
         ])
     ]),
     dbc.Row([
+        dbc.Col([html.Label(html.I("Select a year:"), style={"padding-bottom": "10px"}), year_slider]),
+    ], style={"padding": "0px 80px 40px 80px", "text-align": "center"}),
+    dbc.Row([
         dbc.Col([
             html.H5(id="types-section-aggregate-title", style={"text-align": "center"}),
-            dcc.Graph(id="types-section-aggregate-graph",
-                      config=graph_config("EuRepoC-top-attack-types-by-sector")),
-            dcc.Store(id="types-section-bar-index-store", data=[]),
-        ], md=6),
-        dbc.Col([
-            html.H5(id="types-section-evolution-title", style={"text-align": "center"}),
             html.P([
+                DashIconify(icon="mdi:cursor-default-click-outline", width=25, rotate=1),
                 html.I(
-                    "Click on a sector in the bar chart to display the timeline for that sector",
+                    " Click on sectors in the bar chart to filter the graphs",
                     style={"font-size": "0.8rem"}
                 ),
             ], style={"text-align": "center"}),
-            dcc.Graph(id="types-section-evolution-graph",
-                      config=graph_config("EuRepoC-attack-types-overtime")),
-            dcc.Store(id="types-section-bar-label-store", data=[]),
+            dcc.Graph(id="types-section-aggregate-graph",
+                      config=graph_config("EuRepoC-top-attack-types-by-sector")),
+        ], md=6),
+        dbc.Col([
+            dbc.Row([
+                dbc.Col([
+                    html.H5(id="types-section-impact-title", style={"text-align": "center"}),
+                    html.P([
+                        DashIconify(icon="mdi:cursor-default-click-outline", width=25, rotate=1),
+                        html.I(" Click on sectors in the bar chart to filter the graphs", style={"font-size": "0.8rem"}),
+                    ], style={"text-align": "center"}),
+                    dcc.Graph(id="types-section-impact-graph", config=graph_config("EuRepoC-impact-types")),
+                    dcc.Store(id="types-section-last-selected", data=[]),
+                ])
+            ]),
+            dbc.Row([
+                dbc.Col([
+                    html.H5("Intelligence impact", style={"text-align": "center", "padding": "0px 10px"}),
+                    dcc.Graph(id="types-section-intelligence-impact-graph", config=graph_config("EuRepoC-intelligence-impact"))
+                ], md=6),
+                dbc.Col([
+                    html.H5("Functional impact", style={"text-align": "center", "padding": "0px 10px"}),
+                    dcc.Graph(id="types-section-functional-impact-graph", config=graph_config("EuRepoC-functional-impact"))
+                ], md=6)
+            ]),
             html.Div([
                 dmc.Button([
                     "Reset graphs",

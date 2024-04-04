@@ -119,8 +119,41 @@ class QueryData:
             lambda row: True if row["id"] in list_ids else row["settled_initiator"],
             axis=1
         )
-
         df = df[df["settled_initiator"] == True].drop_duplicates()
+
+        original_labels = [
+            'No data breach/exfiltration or data corruption (deletion/altering) and/or leaking of data',
+            'Minor data breach/exfiltration (no critical/sensitive information), but no data corruption (deletion/altering) or leaking of data  ',
+            'Minor data breach/exfiltration (no critical/sensitive information), data corruption (deletion/altering) and/or leaking of data  ',
+            'Data corruption (deletion/altering) but no leaking of data, no data breach/exfiltration OR major data breach / exfiltration, but no data corruption and/or leaking of data',
+            'Major data breach/exfiltration (critical/sensitive information) & data corruption (deletion/altering) and/or leaking of data ',
+            "Not available"
+        ]
+
+        new_labels = [
+            'No data breach/corruption/leak',
+            'Minor data breach',
+            'Moderate data breach',
+            'Significant data breach',
+            'Major data breach',
+            'Unknown'
+        ]
+
+        descriptive_text = [
+            "No data breach/exfiltration, data corruption<br>nor leaking of data",
+            "Data breach/exfiltration of non-critical/sensitive information<br>but no data corruption nor leaking of data",
+            "Data breach/exfiltration of non-critical/sensitive information<br>and data corruption or leaking of data",
+            "Data corruption but no leaking of data<br>nor data breach/exfiltration<br>OR major data breach/exfiltration<br>but no data corruption nor leaking of data",
+            "Data breach/exfiltration of critical/sensitive information<br>& data corruption or leaking of data",
+            "Unknown intelligence impact"
+        ]
+
+        label_mapping = dict(zip(original_labels, new_labels))
+        text_mapping = dict(zip(new_labels, descriptive_text))
+
+        df['intelligence_impact'] = df['intelligence_impact'].replace(label_mapping)
+        df['intelligence_impact_text'] = df['intelligence_impact'].map(text_mapping)
+
         cutoff_date = datetime.strptime('2020-02-01', '%Y-%m-%d')
 
         return df[~((df['start_date'] > cutoff_date) &
