@@ -27,68 +27,38 @@ button_to_sector = {
 }
 
 
-def filter_data_initiators(df, click_button, selected_year, initiator_name=None):
+def filter_data_initiators(df, click_button, initiator_name=None):
     if click_button and click_button != "all-button":
         sector = button_to_sector[click_button]
         df = df[df["receiver_subcategory"] == sector]
 
-    df["start_date"] = pd.to_datetime(df["start_date"])
-
     if initiator_name:
-        if selected_year < 2025:
-            grouper = [
-                pd.Grouper(key="start_date", freq="YE"),
-                "initiator_name",
-                "alpha_2_code",
-                "initiator_category_most_common",
-                "type_clean_most_common",
-                "initial_access_most_common"
-            ]
-        else:
-            grouper = [
-                "initiator_name",
-                "alpha_2_code",
-                "initiator_category_most_common",
-                "type_clean_most_common",
-                "initial_access_most_common"
-            ]
+        grouper = [
+            "initiator_name",
+            "alpha_2_code",
+            "initiator_category_most_common",
+            "type_clean_most_common",
+            "initial_access_most_common"
+        ]
 
         df_aggregated = df.groupby(grouper).agg({"id": "nunique"}).reset_index()
         df_aggregated.rename(columns={"id": "total"}, inplace=True)
-
-        if selected_year < 2025:
-            df_aggregated["year"] = df_aggregated["start_date"].dt.year
-            df_top = df_aggregated[df_aggregated["year"] == selected_year]
-            df_top = df_top[~df_top['initiator_name'].isin(["Not attributed", "Unknown", "Not available"])]
-            df_top = df_top.sort_values(by="total", ascending=False)
+        df_top = df_aggregated[~df_aggregated['initiator_name'].isin(["Not attributed", "Unknown", "Not available"])]
+        df_top = df_top.sort_values(by="total", ascending=False)
+        if "year" in df_top.columns and "start_date" in df_top.columns:
             df_top = df_top.drop(columns=["year", "start_date"]).head(5)
-
         else:
-            df_top = df_aggregated[
-                ~df_aggregated['initiator_name'].isin(["Not attributed", "Unknown", "Not available"])]
-            df_top = df_top.sort_values(by="total", ascending=False).head(5)
+            df_top = df_top.head(5)
 
     else:
-        if selected_year < 2025:
-            grouper = [pd.Grouper(key="start_date", freq="YE"), "initiator_country", "initiator_category"]
-        else:
-            grouper = ["initiator_country", "initiator_category"]
-
+        grouper = ["initiator_country", "initiator_category"]
         df_aggregated = df.groupby(grouper).agg({"id": "nunique"}).reset_index()
         df_aggregated.rename(columns={"id": "total"}, inplace=True)
 
-        if selected_year < 2025:
-            df_aggregated["year"] = df_aggregated["start_date"].dt.year
-            df_top = df_aggregated[df_aggregated["year"] == selected_year]
-            overall_totals = df_top.groupby('initiator_country')['total'].sum()
-            top_countries = overall_totals.nlargest(10).index
-            df_top = df_top[df_top['initiator_country'].isin(top_countries)]
-            df_top = df_top.merge(overall_totals.rename('total_overall'), on='initiator_country')
-        else:
-            overall_totals = df_aggregated.groupby('initiator_country')['total'].sum()
-            top_countries = overall_totals.nlargest(10).index
-            df_top = df_aggregated[df_aggregated['initiator_country'].isin(top_countries)]
-            df_top = df_top.merge(overall_totals.rename('total_overall'), on='initiator_country')
+        overall_totals = df_aggregated.groupby('initiator_country')['total'].sum()
+        top_countries = overall_totals.nlargest(10).index
+        df_top = df_aggregated[df_aggregated['initiator_country'].isin(top_countries)]
+        df_top = df_top.merge(overall_totals.rename('total_overall'), on='initiator_country')
 
         df_top = df_top.sort_values(by=["total_overall", "total"], ascending=[True, True])
 
@@ -212,18 +182,18 @@ class Initiators:
         )
         def update_aggregate_plot(year, selected_country, *args):
             callback_data = self.df.copy(deep=True)
-            callback_data = filter_data(callback_data, selected_country)
+            callback_data = filter_data(callback_data, selected_country, selected_year=year)
             ctx = callback_context
             button_id = ctx.triggered[0]['prop_id'].split('.')[0] if ctx.triggered else None
             if button_id in self.button_group_dict.keys():
-                df_filtered = filter_data_initiators(callback_data, button_id, year)
-                df_table = filter_data_initiators(callback_data, button_id, year, initiator_name=True)
+                df_filtered = filter_data_initiators(callback_data, button_id)
+                df_table = filter_data_initiators(callback_data, button_id, initiator_name=True)
                 sector = self.button_group_dict[button_id]
                 if sector is None:
                     sector = "All sectors"
             else:
-                df_filtered = filter_data_initiators(callback_data, "all-button", year)
-                df_table = filter_data_initiators(callback_data, "all-button", year, initiator_name=True)
+                df_filtered = filter_data_initiators(callback_data, "all-button")
+                df_table = filter_data_initiators(callback_data, "all-button", initiator_name=True)
                 sector = "All sectors"
 
             if df_filtered.empty:

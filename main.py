@@ -52,12 +52,19 @@ types_section_callbacks = Types(
     app=app,
     df=df,
     aggregate_graph_id="types-section-aggregate-graph",
+    aggregate_graph_title_year_id="types-section-aggregate-title-year",
+    aggregate_graph_subtitle_id="types-section-aggregate-subtitle",
     impact_graph_id="types-section-impact-graph",
+    impact_graph_title_year_id="types-section-impact-title-year",
+    impact_graph_subtitle_id="types-section-impact-subtitle",
     intelligence_impact_graph_id="types-section-intelligence-impact-graph",
+    intelligence_impact_graph_subtitle_id="types-section-intell-subtitle",
     functional_impact_graph_id="types-section-functional-impact-graph",
+    functional_impact_graph_subtitle_id="types-section-functional-subtitle",
     techniques_dropdown_sectors_id="types-section-techniques-sectors-dropdown",
     techniques_dropdown_types_id="types-section-techniques-types-dropdown",
     techniques_graph_id="types-section-techniques-bar-chart",
+    year_slider_id="types-section-year-slider",
     reset_button="types-section-reset-graphs",
     last_selected_stack="types-section-last-selected"
 )
@@ -80,4 +87,4 @@ server = app.server
 app.title = "EuRepoC Critical Infrastructure Tracker"
 
 if __name__ == '__main__':
-    app.run_server(host="O.0.0.0")
+    app.run_server(debug=True)

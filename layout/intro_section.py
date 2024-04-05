@@ -26,7 +26,7 @@ intro_section = html.Div([
                 html.B(id='total-incidents'),
                 " worldwide from the year 2000 to today (with a more systematic data collection since 2023)."
             ]),
-            html.Br(),
+            html.Br(), html.Br(),
             html.P("While our data only represents the tip of the iceberg, as we record only publicly \
             disclosed attacks, our aim is to shed light on broad trends and patterns in cyber conflict. \
             This tracker focuses on the most commonly targeted critical infrastructure sectors overtime, \
