@@ -30,7 +30,7 @@ button_group = dbc.ButtonGroup(
             color="primary",
             id="more-dropdown"
         ),
-    ],
+    ], id="button-group", vertical=False
 )
 
 
@@ -43,7 +43,11 @@ initiators_section = dbc.Row([
             html.H2(
                 id="initiators-section-main-title",
                 style={"text-align": "center", "padding-top": "20px", "padding-bottom": "20px", "font-weight": "700"}),
-            html.H3("What are the main threat actors targeting critical infrastructure? "),
+        ])
+    ]),
+    dbc.Row([
+        dbc.Col([
+            html.H3("What are the main threat actors targeting critical infrastructure?"),
             html.P(
                 "Identifying the perpetrators of cyberattacks is a complex yet vital aspect of cybersecurity. \
                 As part of our broader data collection methodolgy, we track attribution reports and update our data \
@@ -53,9 +57,9 @@ initiators_section = dbc.Row([
                 hacker groups and criminal networks. The threat landscape also differs from sector to sector \
                 and overtime. The bar chart below displays the different types of inititiators by country of origin \
                 and a list of the most proliferic threat actors. Use the buttons to compare sectors and/or years.",
-                style={"text-align": "left", "padding": "10px 150px 10px 0px", "font-weight": "400"}
+                style={"text-align": "left", "padding-top": "10px", "padding-bottom": "20px", "font-weight": "400"}
             )
-        ])
+        ], xl=10, md=12)
     ]),
     dbc.Row([
         dbc.Col([button_group]),
@@ -63,19 +67,19 @@ initiators_section = dbc.Row([
     ], style={"padding": "0px 40px 20px 40px", "text-align": "center"}),
     dbc.Row([
         dbc.Col([year_slider]),
-    ], style={"padding": "10px 80px", "text-align": "center"}),
+    ], style={"padding": "10px 80px", "text-align": "center"}, className="hide-slider"),
     dbc.Row([
         dbc.Col([
             html.H5(id="initiators-section-aggregate-title", style={"text-align": "center"}),
             html.H6(id="initiators-section-aggregate-sector-year", style={"text-align": "center"}),
             dcc.Graph(id="initiators-section-aggregate-graph",
                       config=graph_config("EuRepoC-Type-of-initiators-by-country-of-origin")),
-        ], md=7),
+        ], xl=7),
         dbc.Col([
             html.H5(id="initiators-section-table-title", style={"text-align": "center"}),
             html.H6(id="initiators-section-table-title-sector-year", style={"text-align": "center", "padding-bottom": "10px"}),
             dbc.ListGroup(id="initiators-section-table")
-        ], md=5),
+        ], xl=5),
     ], style={"padding-top": "20px"}),
     html.Div(html.Hr(style={"width": "50%"}), style={"text-align": "center", "padding": "20px"}),
     dbc.Row([
@@ -94,9 +98,9 @@ initiators_section = dbc.Row([
                 to filter the data across the other charts for the chosen conflict. Similarly, by clicking on \
                 a specific sector in the horizontal bar chart, you can view the attributed initiators specific \
                 to that sector and selected conflict."),
-            ], style={"text-align": "left", "padding": "10px 150px 20px 0px", "font-weight": "400"}
+            ], style={"text-align": "left", "padding-top": "10px", "font-weight": "400"}
             )
-        ]),
+        ], xl=10, md=12),
     ]),
     dbc.Row([
         dbc.Col([
@@ -110,7 +114,7 @@ initiators_section = dbc.Row([
             ], style={"text-align": "center"}),
             dcc.Graph("initiators-section-conflicts-main-graph",
                       config=graph_config("EuRepoC-number-of-cyber-attacks-linked-to-offline-conflicts"))
-        ], md=6),
+        ], xl=6, style={"padding-top": "20px"}),
         dbc.Col([
             dbc.Row([
                 dbc.Col([
@@ -144,7 +148,7 @@ initiators_section = dbc.Row([
                         ),
                     ], style={"text-align": "right"}),
                 ]),
-            ])
-        ])
-    ])
-], style={"padding": "20px 80px"}, className="background-container background-container-initiators")
+            ], style={"padding-top": "20px"})
+        ], xl=6, style={"padding-top": "20px"})
+    ], style={"padding-bottom": "20px"}),
+], className="background-container background-container-initiators page-padding")

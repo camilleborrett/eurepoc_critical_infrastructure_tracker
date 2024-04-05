@@ -3861,6 +3861,51 @@ textarea.form-control-lg {
   border-top-right-radius: 0;
 }
 
+
+@media (max-width: 700px) {
+  .btn-group {
+    position: relative;
+    display: inline-flex;
+    vertical-align: middle;
+  }
+  .btn-group > .btn {
+  position: relative;
+  flex: 1 1 auto;
+  }
+  .btn-group > .btn-check:checked + .btn,
+  .btn-group > .btn-check:focus + .btn,
+  .btn-group > .btn:hover,
+  .btn-group > .btn:focus,
+  .btn-group > .btn:active,
+  .btn-group > .btn.active {
+    z-index: 1;
+  }
+  .btn-group {
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  }
+  .btn-group > .btn,
+  .btn-group > .btn-group {
+    width: 100%;
+  }
+  .btn-group > .btn:not(:first-child),
+  .btn-group > .btn-group:not(:first-child) {
+    margin-top: calc(var(--bs-border-width) * -1);
+  }
+  .btn-group > .btn:not(:last-child):not(.dropdown-toggle),
+  .btn-group > .btn-group:not(:last-child) > .btn {
+    border-bottom-right-radius: 0;
+    border-bottom-left-radius: 0;
+  }
+  .btn-group > .btn ~ .btn,
+  .btn-group > .btn-group:not(:first-child) > .btn {
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+  }
+}
+
+
 .nav {
   --bs-nav-link-padding-x: 1rem;
   --bs-nav-link-padding-y: 0.5rem;
@@ -12351,6 +12396,7 @@ thead th {
     z-index: -1; /* Keeps the overlay behind the content */
 }
 
+
 .background-container {
     position: relative;  /* Required to position the pseudo-element */
 }
@@ -12416,16 +12462,26 @@ thead th {
 }
 
 .custom-margin {
-    padding: 0rem 20rem 0rem 20rem !important;
+    padding: 1rem 13rem 1rem 13rem !important;
 }
 
-
-@media (max-width: 1300px) {
+@media (max-width: 1400px) {
     .custom-margin {
-      padding: 0rem 2rem 0rem 2rem !important;
+      padding: 1rem 7rem 1rem 7rem !important;
     }
 }
 
+@media (max-width: 1200px) {
+    .custom-margin {
+      padding: 0.5rem 3rem 0.5rem 3rem !important;
+    }
+}
+
+@media (max-width: 992px) {
+    .custom-margin {
+      padding: 0rem 1rem 0rem 1rem !important;
+    }
+}
 
 @media (max-width: 768px) {
     .custom-margin {
@@ -12442,13 +12498,13 @@ thead th {
     }
 }
 
-.height-adjusted-row{
-    height: auto;
+
+.hide-slider {
 }
 
-@media (max-width: 768px) {
-    .height-adjusted-row {
-        height: auto;
+@media (max-width: 600px) {
+    .hide-slider {
+        display: none;
     }
 }
 
@@ -12560,3 +12616,33 @@ input:checked + .mantine-oiqp27 {
 .mantine-orpx9h {
     background-color: #668088;
 }
+
+
+.page-padding {
+  padding: 1rem 4rem;
+}
+
+@media (max-width: 1400px) {
+  .page-padding {
+    padding: 1rem 2.5rem;
+  }
+}
+
+@media (max-width: 1200px) {
+  .page-padding {
+    padding: 1rem 2rem;
+  }
+}
+
+@media (max-width: 992px) {
+  .page-padding {
+    padding: 0.5rem 0.8rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .page-padding {
+    padding: 0.5rem 0.5rem;
+  }
+}
+

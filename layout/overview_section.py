@@ -12,15 +12,19 @@ overview_section = dbc.Row([
                 id="overview-section-main-title",
                 style={"text-align": "center", "padding-top": "20px", "padding-bottom": "20px", "font-weight": "700"}
             ),
+        ])
+    ]),
+    dbc.Row([
+        dbc.Col([
             html.H3("What are the most frequently targeted critical infrastructure sectors?"),
             html.P(
                 "The bar chart shows the aggregate number of attacks recorded by EuRepoC per sector since 2000. \
                  While the timeline shows the rolling average number of attacks publicly disclosed over 30 days \
                  since January 2023, along with the rolling average intensity of these attacks also over 30 days. \
                  Click on the bars to display and compare the timeline for each sector.",
-                style={"text-align": "left", "padding": "10px 150px 20px 0px", "font-weight": "400"}
+                style={"text-align": "left", "padding-top": "10px", "padding-bottom": "20px", "font-weight": "400"}
             )
-        ])
+        ], xl=10, md=12)
     ]),
     dbc.Row([
         dbc.Col([
@@ -37,10 +41,9 @@ overview_section = dbc.Row([
                 id="overview-section-aggregate-graph",
                 config=graph_config("EuRepoC_top_targeted_critical_infrastructure_sectors")
             ),
-        ], md=6),
+        ], xl=6),
         dbc.Col([
             html.H5(id="overview-section-evolution-graph-title", style={"text-align": "center", 'margin-bottom': '2.8rem'}),
-            #html.Br(),
             dcc.Store(id="overview-section-bar-label-store", data=[]),
             dcc.Graph(
                 id="overview-section-evolution-graph",
@@ -55,7 +58,7 @@ overview_section = dbc.Row([
                     radius="sm",
                     color="grey"
                 )
-            ]),
+            ], style={"padding-top": "20px"}),
             html.Div([
                 dmc.Button([
                     "Reset graphs",
@@ -67,7 +70,7 @@ overview_section = dbc.Row([
                     size="sm",
                 ),
             ], style={"text-align": "right"}),
-        ], md=6)
+        ], xl=6)
     ]),
     html.Div(html.Hr(style={"width": "50%", "weight": "500"}), style={"text-align": "center", "padding": "20px 10px"}),
     dbc.Row([
@@ -77,18 +80,18 @@ overview_section = dbc.Row([
                 "The pie chart shows the types of organisations within each critical infrastructure sector \
                 most targeted by cyberattacks. As opposed to the bar chart above which shows the number of incidents \
                 per sector, the pie shows the number of targeted organisations per sector - one incident may target \
-                multiple organisations from the same sector."
-                " Click on a section on a sector on the pie to expand the graph for that sector.",
-                style={"text-align": "left", "padding": "10px 150px 20px 0px", "font-weight": "400"}
+                multiple organisations from the same sector. Click on a section on a sector on the pie to \
+                expand the graph for that sector.",
+                style={"text-align": "left", "padding-top": "10px", "padding-bottom": "20px", "font-weight": "400"}
             )
-        ])
+        ], xl=10, lg=12)
     ]),
     dbc.Row([
         dbc.Col([
             dcc.Graph(
                 id="overview-section-sunburst-chart",
-                config=graph_config("EuRepoC_targeted_organisation_types_per_sector")
+                config=graph_config("EuRepoC_targeted_organisation_types_per_sector"),
             )
-        ], md=12)
-    ])
-], style={"padding": "20px 80px"}, className="background-container background-container-overview")
+        ], style={"height": "500px"})
+    ], style={"padding-bottom": "20px"}),
+], className="background-container background-container-overview page-padding")

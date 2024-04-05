@@ -118,19 +118,23 @@ types_section = dbc.Row([
             html.H2(
                 id="types-section-main-title",
                 style={"text-align": "center", "padding-top": "20px", "padding-bottom": "20px", "font-weight": "700"}),
-            html.H3("What are the most frequent types of cyberattacks against each critical infrastructure sector? "),
-            html.P(
-                "This section focused on the main targeted critical infrastructure sectors. The bar chart shows the aggregate number \
-                of attacks recorded by EuRepoC per sector since 2000. The timeline shows the rolling average number of attacks \
-                publicly disclosed over 30 days since January 2023, along with the rolling average intensity of these \
-                attacks also over 30 days. Click on the bars to display and compare the timeline for each sector.",
-                style={"text-align": "left", "padding": "10px 150px 0px 0px", "font-weight": "400"}
-            ),
         ])
     ]),
     dbc.Row([
+        dbc.Col([
+            html.H3("What are the most frequent types of cyberattacks against each critical infrastructure sector?"),
+            html.P(
+                "The bar chart shows the aggregate number of attacks recorded by EuRepoC per sector since 2000. \
+                 While the timeline shows the rolling average number of attacks publicly disclosed over 30 days \
+                 since January 2023, along with the rolling average intensity of these attacks also over 30 days. \
+                 Click on the bars to display and compare the timeline for each sector.",
+                style={"text-align": "left", "padding-top": "10px", "padding-bottom": "10px", "font-weight": "400"}
+            )
+        ], xl=10, md=12)
+    ]),
+    dbc.Row([
         dbc.Col([html.Label(html.I("Select a year:"), style={"padding-bottom": "10px"}), year_slider]),
-    ], style={"padding": "0px 80px 40px 80px", "text-align": "center"}),
+    ], style={"padding": "0px 80px 40px 80px", "text-align": "center"}, className="hide-slider"),
     dbc.Row([
         dbc.Col([
             html.H5([
@@ -140,7 +144,7 @@ types_section = dbc.Row([
             html.P(id="types-section-aggregate-subtitle", style={"text-align": "center"}),
             dcc.Graph(id="types-section-aggregate-graph",
                       config=graph_config("EuRepoC-top-attack-types-by-sector")),
-        ], md=6),
+        ], xl=6, style={"padding-top": "20px"}),
         dbc.Col([
             dbc.Row([
                 dbc.Col([
@@ -155,16 +159,55 @@ types_section = dbc.Row([
             ]),
             dbc.Row([
                 dbc.Col([
-                    html.H5("Intelligence impact", style={"text-align": "center"}),
+                    html.H5([
+                        html.Span("Intelligence impact", style={"display": "inline-block"}),
+                        html.Span([
+                            dmc.Tooltip(
+                                multiline=True,
+                                width=220,
+                                withArrow=True,
+                                transition="fade",
+                                position="right",
+                                transitionDuration=200,
+                                label="The severity of the data exfiltration"
+                                      " or data corruption (deletion/alteration)",
+                                children=[
+                                    DashIconify(
+                                        icon="ph:question",
+                                        width=15, style={"margin-bottom": "12px", "margin-left": "2px"}
+                                    )
+                                ]
+                            )
+                        ], style={"display": "inline-block"}),
+                    ], style={"text-align": "center"}),
                     html.B(id="types-section-intell-subtitle", style={"text-align": "center", "padding-bottom": "10px"}),
                     dcc.Graph(id="types-section-intelligence-impact-graph", config=graph_config("EuRepoC-intelligence-impact"))
                 ], md=6),
                 dbc.Col([
-                    html.H5("Functional impact", style={"text-align": "center"}),
+                    html.H5([
+                        html.Span("Functional impact", style={"display": "inline-block"}),
+                        html.Span([
+                            dmc.Tooltip(
+                                multiline=True,
+                                width=220,
+                                withArrow=True,
+                                transition="fade",
+                                position="right",
+                                transitionDuration=200,
+                                label="How long a target system's functionality was affected",
+                                children=[
+                                    DashIconify(
+                                        icon="ph:question",
+                                        width=15, style={"margin-bottom": "12px", "margin-left": "2px"}
+                                    )
+                                ]
+                            )
+                        ], style={"display": "inline-block"}),
+                    ], style={"text-align": "center"}),
                     html.B(id="types-section-functional-subtitle", style={"text-align": "center", "padding-bottom": "10px"}),
                     dcc.Graph(id="types-section-functional-impact-graph", config=graph_config("EuRepoC-functional-impact"))
                 ], md=6)
-            ], style={"padding": "10px 0px 0px 0px"}),
+            ], style={"padding": "20px 0px 0px 0px"}),
             html.Div([
                 dmc.Button([
                     "Reset graphs",
@@ -176,7 +219,7 @@ types_section = dbc.Row([
                     size="sm",
                 ),
             ], style={"text-align": "right", "padding-top": "10px"})
-        ], md=6)
+        ], xl=6, style={"padding-top": "20px"})
     ]),
     html.Div(html.Hr(style={"width": "50%"}), style={"text-align": "center", "padding": "20px"}),
     dbc.Row([
@@ -191,9 +234,9 @@ types_section = dbc.Row([
                 This graphs shows the most frequent ‘Initial Access’ techniques defined under the MITRE ATT&CK \
                 framework that adverseries use to gain their initial foothold within the network of \
                 critical infrastructure organisations.",
-                style={"text-align": "left", "padding": "10px 150px 20px 0px", "font-weight": "400"}
+                style={"text-align": "left", "padding-top": "10px", "padding-bottom": "20px", "font-weight": "400"}
             )
-        ]),
+        ], xl=10, md=12),
     ]),
     dbc.Row([
         dbc.Col([
@@ -244,12 +287,11 @@ types_section = dbc.Row([
             ]),
             dcc.Graph(id="types-section-techniques-bar-chart",
                       config=graph_config("EuRepoC-MITRE-Initial-Access-techniques-used-in-attacks"))
-        ], md=6),
+        ], xl=6),
         dbc.Col([
-            html.Br(),
             html.Br(),
             html.P(html.B("Definitions of the MITRE Initial Access techniques")),
             mitre_accordion
-        ], md=6, style={"padding-left": "20px"})
-    ])
-], style={"padding": "20px 80px"}, className="background-container background-container-types")
+        ], xl=6, style={"padding-left": "20px"})
+    ], style={"padding-bottom": "20px"}),
+], className="background-container background-container-types page-padding")

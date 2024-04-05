@@ -30,7 +30,6 @@ def aggregate_plot_layout(grid_title):
 
 evolution_plot_layout = {
     "xaxis_title": "Date of disclosure",
-    "yaxis_title": '30 day rolling average',
     "legend_title": "",
     "plot_bgcolor": 'rgba(0,0,0,0)',
     "paper_bgcolor": 'rgba(0,0,0,0)',
@@ -74,7 +73,7 @@ evolution_plot_layout = {
         "overlaying": "y",
         "side": "right"
     },
-    "margin": {'l': 10, 'r': 10, 't': 10, 'b': 10},
+    "margin": {'l': 10, 'r': 0, 't': 10, 'b': 10},
     "height": 430,
 }
 
@@ -97,9 +96,16 @@ def generate_plot(data, fig, moving_average=False, selected_sector=None, len_sec
     if moving_average:
         col_name_count = "value_moving_avg"
         col_name_intensity = "intensity_moving_avg"
+        hovertemplate_count = 'Date: %{x}<br>Rolling average over 30 days: %{y:.1f}<br>Incident count: %{text}<extra></extra>'
+        hovertemplate_intensity = 'Date: %{x}<br>Rolling average intensity over 30 days: %{y:.1f}<br>Mean intensity: %{text:.1f}<extra></extra>'
+        axis_title="Rolling average over 30 days"
+
     else:
         col_name_count = "cumulative_count"
         col_name_intensity = "weighted_intensity"
+        hovertemplate_count = 'Date: %{x}<br>Cumulative count of incidents: %{y:.1f}<br>Incident count: %{text}<extra></extra>'
+        hovertemplate_intensity = 'Date: %{x}<br>Mean intensity: %{text:.1f}<extra></extra>'
+        axis_title="Cumulative count"
 
     if selected_sector:
         name = selected_sector
@@ -115,8 +121,6 @@ def generate_plot(data, fig, moving_average=False, selected_sector=None, len_sec
         color = "#002C38"
         visibility = True
 
-    hovertemplate_count = 'Date: %{x}<br>Moving average over 30 days: %{y:.1f}<br>Incident count: %{text}<extra></extra>'
-    hovertemplate_intensity = 'Date: %{x}<br>Moving average over 30 days: %{y:.1f}<br>Mean intensity: %{text:.1f}<extra></extra>'
 
     fig.add_trace(
         go.Scatter(
@@ -124,7 +128,7 @@ def generate_plot(data, fig, moving_average=False, selected_sector=None, len_sec
             y=data[col_name_count],
             mode='lines',
             text=data['id'],
-            name=f'{name} - 30 day average',
+            name=f'{name}',
             line=dict(color=color),
             hovertemplate=hovertemplate_count
         ),
@@ -136,7 +140,7 @@ def generate_plot(data, fig, moving_average=False, selected_sector=None, len_sec
             y=data[col_name_intensity],
             mode='lines',
             text=data['weighted_intensity'],
-            name=f'{name} - Intensity',
+            name=f'Intensity',
             line=dict(color=color, dash='dot'),
             hovertemplate=hovertemplate_intensity,
             visible=visibility
@@ -147,6 +151,7 @@ def generate_plot(data, fig, moving_average=False, selected_sector=None, len_sec
     fig.update_layout(showlegend=True)
     fig.update_xaxes(rangeslider_visible=True)
     fig.update_layout(**evolution_plot_layout)
+    fig.update_layout(yaxis_title=axis_title)
     return fig
 
 

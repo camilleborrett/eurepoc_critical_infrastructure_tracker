@@ -154,6 +154,10 @@ class QueryData:
         df['intelligence_impact'] = df['intelligence_impact'].replace(label_mapping)
         df['intelligence_impact_text'] = df['intelligence_impact'].map(text_mapping)
 
+        df['functional_impact'] = df['functional_impact'].replace("Not available", "Unknown")
+        df["impact"] = df["impact"].replace("Not available", "Unknown")
+
+
         cutoff_date = datetime.strptime('2020-02-01', '%Y-%m-%d')
 
         return df[~((df['start_date'] > cutoff_date) &

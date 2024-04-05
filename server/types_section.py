@@ -39,7 +39,7 @@ functional_category_array_list = [
     "Days (< 7 days)",
     'Weeks (< 4 weeks)',
     'Months',
-    'Not available'
+    'Unknown'
 ]
 
 

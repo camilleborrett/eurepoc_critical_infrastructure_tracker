@@ -25,6 +25,6 @@ navbar = dbc.NavbarSimple(
     color="rgba(0, 0, 0, 0);",
     links_left=True,
     expand="lg",
-    style={"padding": "0px 80px"},
+    style={"padding": "30px"},
     id="intro-section"
 )

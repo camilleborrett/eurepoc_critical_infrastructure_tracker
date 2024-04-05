@@ -103,7 +103,7 @@ def conflict_sectors_graph(df, click_data=None, conflict_name=None):
                 linecolor='rgba(225,225,225,0.4)',
                 gridcolor='rgba(225,225,225,0.4)',
             ),
-            margin=dict(l=10, r=10, t=10, b=10),
+            margin=dict(l=0, r=0, t=10, b=10),
             plot_bgcolor="rgba(0,0,0,0)",
             paper_bgcolor="rgba(0,0,0,0)",
             height=200,
@@ -241,7 +241,7 @@ class Initiators:
                         gridcolor='rgba(225,225,225,0.4)',
                     ),
                     height=570,
-                    margin=dict(l=10, r=10, t=30, b=10),
+                    margin=dict(l=0, r=0, t=30, b=10),
                     paper_bgcolor="rgba(0,0,0,0)",
                 )
 
@@ -299,7 +299,7 @@ class Initiators:
                 showlegend=False,
                 plot_bgcolor="rgba(0,0,0,0)",
                 paper_bgcolor="rgba(0,0,0,0)",
-                margin=dict(l=10, r=10, t=10, b=10),
+                margin=dict(l=0, r=0, t=10, b=10),
                 height=520
             )
             return fig
@@ -447,7 +447,7 @@ class Initiators:
                         gridcolor='rgba(225,225,225,0.6)',
                     ),
                     height=300,
-                    margin=dict(l=10, r=10, t=30, b=10),
+                    margin=dict(l=0, r=0, t=30, b=10),
                     paper_bgcolor="rgba(0,0,0,0)",
                 )
 
