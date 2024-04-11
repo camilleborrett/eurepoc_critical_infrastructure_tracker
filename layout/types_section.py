@@ -124,10 +124,9 @@ types_section = dbc.Row([
         dbc.Col([
             html.H3("What are the most frequent types of cyberattacks against each critical infrastructure sector?"),
             html.P(
-                "The bar chart shows the aggregate number of attacks recorded by EuRepoC per sector since 2000. \
-                 While the timeline shows the rolling average number of attacks publicly disclosed over 30 days \
-                 since January 2023, along with the rolling average intensity of these attacks also over 30 days. \
-                 Click on the bars to display and compare the timeline for each sector.",
+                "The stacked bar chart illustrates the proportion of cyberattack types per sector, \
+                while the bar charts show the specific impacts of these attacks as classified by the MITRE framework. \
+                Display the data for a specific year using the slider below. Click on the graphs to filter the data.",
                 style={"text-align": "left", "padding-top": "10px", "padding-bottom": "10px", "font-weight": "400"}
             )
         ], xl=10, md=12)

@@ -33,7 +33,7 @@ app.layout = serve_layout()
     Input("selected-country", "value"),
 )
 def update_total_incidents(selected_country):
-    return [f"{nb_incidents} cyber attacks against critical infrastructure"]
+    return [f"{nb_incidents} cyberattacks against critical infrastructure"]
 
 
 update_titles(app)

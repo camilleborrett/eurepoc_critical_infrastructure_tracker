@@ -15,7 +15,7 @@ intro_section = html.Div([
             ),
             html.P(
                 "Cyberattacks on critical infrastructure represent a significant threat to society and \
-                national security, impacting crucial systems from power grids, transportation networks to hospitals \
+                national security, as they impact crucial systems from power grids, transportation networks to hospitals \
                 and banking services. As critical infrastructure sectors become increasingly digitialised \
                 and interconnected, they also become increasingly vulnerable to malicous cyber activities.",
                 style={'font-weight': '400', "text-align": "left", 'padding-top': '10px'},
