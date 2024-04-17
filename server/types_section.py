@@ -87,6 +87,7 @@ def generate_aggregate_graph(data):
         legend=dict(traceorder='normal'),
         plot_bgcolor='rgba(0,0,0,0)',
         paper_bgcolor='rgba(0,0,0,0)',
+        font=dict(color='black'),
         margin={'l': 10, 'r': 10, 't': 10, 'b': 10},
         height=550
     )
@@ -120,6 +121,7 @@ def generate_impact_graph(data=None, clicked_category=None, clicked_type=None, c
             linecolor='rgba(225,225,225,0.9)',
             gridcolor='rgba(225,225,225,0.9)',
         ),
+        font=dict(color='black'),
         margin={'l': 10, 'r': 10, 't': 10, 'b': 10},
         height=300
     )
@@ -163,6 +165,7 @@ def generate_impact_type_graph(data=None, impact_type=None, text_column=None, ma
             gridcolor='rgba(225,225,225,0.9)',
         ),
         margin={'l': 10, 'r': 10, 't': 10, 'b': 10},
+        font=dict(color='black'),
         bargap=0.1,
         barcornerradius=8,
         height=300
@@ -463,6 +466,7 @@ class Types:
                         linecolor='rgba(225,225,225,0.9)',
                         gridcolor='rgba(225,225,225,0.9)',
                     ),
+                    font=dict(color='black'),
                     margin={'l': 10, 'r': 10, 't': 10, 'b': 10}
                 )
                 return fig

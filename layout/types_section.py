@@ -143,6 +143,7 @@ types_section = dbc.Row([
             html.P(id="types-section-aggregate-subtitle", style={"text-align": "center"}),
             dcc.Graph(id="types-section-aggregate-graph",
                       config=graph_config("EuRepoC-top-attack-types-by-sector")),
+            html.P(html.I("'Other' includes hijacking with misuse and hijacking without misuse operations."), style={"text-align": "center", "font-size": "0.8rem"}),
         ], xl=6, style={"padding-top": "20px"}),
         dbc.Col([
             dbc.Row([

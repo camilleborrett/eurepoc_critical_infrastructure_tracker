@@ -75,6 +75,7 @@ evolution_plot_layout = {
     },
     "margin": {'l': 10, 'r': 0, 't': 10, 'b': 10},
     "height": 450,
+    "font": {"color": 'black'},
 }
 
 
@@ -333,6 +334,7 @@ class OverviewIntensity:
                 plot_bgcolor="rgba(0,0,0,0)",
                 paper_bgcolor="rgba(0,0,0,0)",
                 margin=dict(l=0, r=0, t=0, b=0),
+                font=dict(color='black'),
                 height=500
             )
             return fig

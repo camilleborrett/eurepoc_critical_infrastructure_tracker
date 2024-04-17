@@ -107,6 +107,7 @@ def conflict_sectors_graph(df, click_data=None, conflict_name=None):
             plot_bgcolor="rgba(0,0,0,0)",
             paper_bgcolor="rgba(0,0,0,0)",
             height=200,
+            font=dict(color='black'),
             legend=dict(
                 orientation="h",
                 yanchor="bottom",
@@ -240,6 +241,7 @@ class Initiators:
                         linecolor='rgba(225,225,225,0.4)',
                         gridcolor='rgba(225,225,225,0.4)',
                     ),
+                    font=dict(color='black'),
                     height=570,
                     margin=dict(l=0, r=0, t=30, b=10),
                     paper_bgcolor="rgba(0,0,0,0)",
@@ -300,6 +302,7 @@ class Initiators:
                 plot_bgcolor="rgba(0,0,0,0)",
                 paper_bgcolor="rgba(0,0,0,0)",
                 margin=dict(l=0, r=0, t=10, b=10),
+                font=dict(color='black'),
                 height=520
             )
             return fig
@@ -449,6 +452,7 @@ class Initiators:
                     height=300,
                     margin=dict(l=0, r=0, t=30, b=10),
                     paper_bgcolor="rgba(0,0,0,0)",
+                    font=dict(color='black'),
                 )
 
                 if selected_conflict != "All conflicts":
