@@ -29,7 +29,7 @@ def aggregate_plot_layout(grid_title):
 
 
 evolution_plot_layout = {
-    "xaxis_title": "Date of disclosure",
+    "xaxis_title": "<i>date range slider - drag the handles to select a time period<br></i>",
     "legend_title": "",
     "plot_bgcolor": 'rgba(0,0,0,0)',
     "paper_bgcolor": 'rgba(0,0,0,0)',
@@ -74,7 +74,7 @@ evolution_plot_layout = {
         "side": "right"
     },
     "margin": {'l': 10, 'r': 0, 't': 10, 'b': 10},
-    "height": 430,
+    "height": 450,
 }
 
 

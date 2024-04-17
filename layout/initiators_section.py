@@ -50,13 +50,14 @@ initiators_section = dbc.Row([
             html.H3("What are the main threat actors targeting critical infrastructure?"),
             html.P(
                 "Identifying the perpetrators of cyberattacks is a complex yet vital aspect of cybersecurity. \
-                As part of our broader data collection methodolgy, we track attribution reports and update our data \
+                As part of our broader data collection methodology, we track attribution reports and update our data \
                 as new information emerges. Although a large proportion of attacks remain unattributed, our data shows \
                 the diverse array of threat actors that target critical infrastructure sectors, \
                 ranging from advanced persistent threats (APTs), often state or state-sponsored groups, to independent \
                 hacker groups and criminal networks. The threat landscape also differs from sector to sector \
                 and overtime. The bar chart below displays the different types of inititiators by country of origin \
-                and a list of the most proliferic threat actors. Use the buttons to compare sectors and/or years.",
+                and a list of the most proliferic threat actors. Use the buttons to compare sectors and/or years. \
+                Please note again that a cyber operation can affect multiple target sectors.",
                 style={"text-align": "left", "padding-top": "10px", "padding-bottom": "20px", "font-weight": "400"}
             )
         ], xl=10, md=12)
@@ -113,7 +114,8 @@ initiators_section = dbc.Row([
                 ),
             ], style={"text-align": "center"}),
             dcc.Graph("initiators-section-conflicts-main-graph",
-                      config=graph_config("EuRepoC-number-of-cyber-attacks-linked-to-offline-conflicts"))
+                      config=graph_config("EuRepoC-number-of-cyber-attacks-linked-to-offline-conflicts"),
+                      style={"height": "520px"}),
         ], xl=6, style={"padding-top": "20px"}),
         dbc.Col([
             dbc.Row([
@@ -127,14 +129,18 @@ initiators_section = dbc.Row([
                 ),
                 ], style={"text-align": "center"}),
                     dcc.Graph("initiators-section-conflicts-sectors-graph",
-                              config=graph_config("EuRepoC-sectors-targeted-by-cyber-attacks-linked-to-offline-conflicts"))
+                              config=graph_config("EuRepoC-sectors-targeted-by-cyber-attacks-linked-to-offline-conflicts"),
+                              style={"height": "200px"}
+                    )
                 ]),
             ]),
             dbc.Row([
                 dbc.Col([
                     html.H5(id="initiators-section-conflicts-initiators-title", style={"text-align": "center", "padding-top": "20px"}),
                     dcc.Graph("initiators-section-conflicts-initiators-graph",
-                              config=graph_config("EuRepoC-type-of-initiators-of-cyber-attacks-linked-to-offline-conflicts")),
+                              config=graph_config("EuRepoC-type-of-initiators-of-cyber-attacks-linked-to-offline-conflicts"),
+                              style={"height": "300px"}
+                    ),
                     dcc.Store("initiators-section-conflicts-initiators-store"),
                     html.Div([
                         dmc.Button([

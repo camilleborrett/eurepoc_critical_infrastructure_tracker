@@ -171,16 +171,18 @@ def generate_impact_type_graph(data=None, impact_type=None, text_column=None, ma
     return fig
 
 
-def filter_data_click_data(data=None, category=None, type=None, last_selected=None, impact_click_data=None):
-    if last_selected != "null" and impact_click_data:
-        filtered_data = data[(data["receiver_subcategory"] == category) & (data["type_clean"] == type) & (data["impact"] == impact_click_data)]
-    elif last_selected == "null" and impact_click_data:
-        filtered_data = data[data["impact"] == impact_click_data]
-    elif last_selected != "null" and not impact_click_data:
-        filtered_data = data[(data["receiver_subcategory"] == category) & (data["type_clean"] == type)]
-    else:
-        filtered_data = data
-    return filtered_data
+def filter_data_click_data(data, category=None, incident_type=None, impact=None):
+    conditions = {}
+    if category is not None:
+        conditions['receiver_subcategory'] = category
+    if incident_type is not None:
+        conditions['type_clean'] = incident_type
+    if impact is not None:
+        conditions['impact'] = impact
+
+    for key, value in conditions.items():
+        data = data[data[key] == value]
+    return data
 
 
 class Types:
@@ -400,9 +402,8 @@ class Types:
                 df_clean = filter_data_click_data(
                     data=df_clean,
                     category=clicked_category,
-                    type=clicked_type,
-                    last_selected=last_selected,
-                    impact_click_data=selected_impact
+                    incident_type=clicked_type,
+                    impact=selected_impact
                 )
 
                 intell_fig = generate_impact_type_graph(
