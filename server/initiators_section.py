@@ -1,11 +1,12 @@
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
-from dash.dependencies import Input, Output
-from dash import callback_context, html
+from dash.dependencies import Input, Output, State
+from dash import html, ctx
 import dash_bootstrap_components as dbc
 from server.utils import filter_data, empty_figure, sectors_color_map, initiator_types_color_map
 from io import StringIO
+from datetime import datetime, date
 
 
 button_to_sector = {
@@ -134,6 +135,7 @@ class Initiators:
             conflicts_sectors_graph_id,
             conflicts_initiators_graph_id,
             conflicts_store_id,
+            date_range_picker_id,
             reset_button
     ):
         self.app = app
@@ -148,12 +150,14 @@ class Initiators:
         self.conflicts_sectors_graph_id = conflicts_sectors_graph_id
         self.conflicts_initiators_graph_id = conflicts_initiators_graph_id
         self.conflicts_store_id = conflicts_store_id
+        self.date_range_picker_id = date_range_picker_id
         self.reset_button = reset_button
 
         self.initialize_callbacks()
 
     def initialize_callbacks(self):
         self.active_button()
+        self.reset_year_slider()
         self.generate_aggregate_plot()
         self.generate_main_conflict_graph()
         self.generate_sectors_conflict_graph()
@@ -162,15 +166,33 @@ class Initiators:
     def active_button(self):
         @self.app.callback(
             [Output(key, "active") for key in self.button_group_dict.keys()],
+            [Input("selected-country", "value")] +
             [Input(key, "n_clicks") for key in self.button_group_dict.keys()],
             [Input("active-button-store", "data")]
         )
-        def update_button_active_state(*args):
-            ctx = callback_context
-            if not ctx.triggered:
+        def update_button_active_state(selected_country, *args):
+            button_id = ctx.triggered_id
+            if not ctx.triggered or button_id == "selected-country":
                 return [True] + [False] * (len(self.button_group_dict) - 1)
-            button_id = ctx.triggered[0]['prop_id'].split('.')[0]
             return [button_id == key for key in self.button_group_dict.keys()]
+
+    def reset_year_slider(self):
+        @self.app.callback(
+            Output(self.year_slider_id, "value"),
+            Output(self.date_range_picker_id, "value"),
+            Input("selected-country", "value"),
+            Input(self.date_range_picker_id, "value"),
+            Input(self.reset_button, "n_clicks"),
+            [State(self.year_slider_id, "value"),
+             State(self.date_range_picker_id, "value")]
+        )
+        def reset_year_slider(selected_country, date_range, reset_button, current_year, current_dates):
+            triggered_id = ctx.triggered_id
+            if triggered_id == "selected-country":
+                return 2025, [date(2000, 1, 1), datetime.now().date()]
+            elif triggered_id == self.reset_button or date_range is None:
+                return current_year, [date(2000, 1, 1), datetime.now().date()]
+            return current_year, current_dates
 
     def generate_aggregate_plot(self):
         @self.app.callback(
@@ -184,9 +206,8 @@ class Initiators:
         def update_aggregate_plot(year, selected_country, *args):
             callback_data = self.df.copy(deep=True)
             callback_data = filter_data(callback_data, selected_country, selected_year=year)
-            ctx = callback_context
-            button_id = ctx.triggered[0]['prop_id'].split('.')[0] if ctx.triggered else None
-            if button_id in self.button_group_dict.keys():
+            button_id = ctx.triggered_id
+            if button_id in self.button_group_dict.keys() and button_id != "selected-country":
                 df_filtered = filter_data_initiators(callback_data, button_id)
                 df_table = filter_data_initiators(callback_data, button_id, initiator_name=True)
                 sector = self.button_group_dict[button_id]
@@ -268,14 +289,14 @@ class Initiators:
             Output(self.conflicts_main_graph_id, "figure"),
             [Input("selected-country", "value"),
              Input(self.conflicts_main_graph_id, "clickData"),
-             Input(self.reset_button, "n_clicks")]
+             Input(self.reset_button, "n_clicks"),
+             Input(self.date_range_picker_id, "value")]
         )
-        def update_main_conflict_graph(selected_country, click_data, reset_button):
+        def update_main_conflict_graph(selected_country, click_data, reset_button, dates):
             callback_data = self.df.copy(deep=True)
-            callback_data = filter_data(callback_data, selected_country)
+            callback_data = filter_data(callback_data, selected_country, date_range=dates)
             callback_data = callback_data[callback_data["conflict_name"] != "Not available"]
-            ctx = callback_context
-            triggered_id = ctx.triggered[0]['prop_id'].split('.')[0] if ctx.triggered else None
+            triggered_id = ctx.triggered_id
 
             if callback_data.empty:
                 return empty_figure()
@@ -284,7 +305,7 @@ class Initiators:
             if click_data:
                 selected_segment = click_data['points'][0]['pointNumber']
 
-            if triggered_id == self.reset_button or triggered_id == "selected-country":
+            if triggered_id == self.reset_button or triggered_id == "selected-country" or triggered_id == self.date_range_picker_id:
                 selected_segment = None
 
             callback_data = callback_data.groupby(["conflict_name"]).agg({"id": "nunique"}).reset_index()
@@ -314,14 +335,14 @@ class Initiators:
             Output("initiators-section-conflicts-sectors-title", "children"),
             [Input("selected-country", "value"),
              Input(self.conflicts_main_graph_id, "clickData"),
-             Input(self.reset_button, "n_clicks")]
+             Input(self.reset_button, "n_clicks"),
+             Input(self.date_range_picker_id, "value")]
         )
-        def update_sectors_conflict_graph(selected_country, click_data, reset_button):
+        def update_sectors_conflict_graph(selected_country, click_data, reset_button, dates):
             callback_data = self.df.copy(deep=True)
-            callback_data = filter_data(callback_data, selected_country)
+            callback_data = filter_data(callback_data, selected_country, date_range=dates)
 
-            ctx = callback_context
-            triggered_id = ctx.triggered[0]['prop_id'].split('.')[0] if ctx.triggered else None
+            triggered_id = ctx.triggered_id
 
             if selected_country == "Global (states)":
                 selected_country = "all countries"
@@ -354,18 +375,21 @@ class Initiators:
             Output("initiators-section-conflicts-initiators-title", "children"),
             [Input("selected-country", "value"),
              Input(self.conflicts_sectors_graph_id, "clickData"),
-             Input(self.conflicts_store_id, "data")]
+             Input(self.conflicts_store_id, "data"),
+             Input(self.date_range_picker_id, "value")]
         )
-        def update_initiators_conflict_graph(selected_country, click_data, data):
+        def update_initiators_conflict_graph(selected_country, click_data, data, dates):
             callback_data = self.df.copy(deep=True)
-            callback_data = filter_data(callback_data, selected_country)
+            callback_data = filter_data(callback_data, selected_country, date_range=dates)
             callback_data = callback_data[callback_data["conflict_name"] != "Not available"]
 
-            ctx = callback_context
-            triggered_id = ctx.triggered[0]['prop_id'].split('.')[0] if ctx.triggered else None
+            triggered_id = ctx.triggered_id
 
             if selected_country == "Global (states)":
                 selected_country = "all countries"
+
+            if triggered_id == "selected-country" or triggered_id == self.reset_button or triggered_id == self.date_range_picker_id:
+                click_data = None
 
             if callback_data.empty:
                 return empty_figure(), ""
@@ -461,4 +485,4 @@ class Initiators:
                     selected_conflict_title = "offline conflicts"
 
                 return (fig,
-                        f"Initiators of cyberattacks linked to {selected_conflict_title} against {selected_sector.lower()} in {selected_country}")
+                        f"Countries of origin of cyberattack initiators linked to {selected_conflict_title} against {selected_sector.lower()} in {selected_country}")

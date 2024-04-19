@@ -80,6 +80,7 @@ initiators_callbacks = Initiators(
     conflicts_sectors_graph_id="initiators-section-conflicts-sectors-graph",
     conflicts_initiators_graph_id="initiators-section-conflicts-initiators-graph",
     conflicts_store_id="initiators-section-conflicts-initiators-store",
+    date_range_picker_id="initiators-section-date-range-picker",
     reset_button="initiators-section-reset-graphs"
 )
 
@@ -87,4 +88,4 @@ server = app.server
 app.title = "EuRepoC Critical Infrastructure Tracker"
 
 if __name__ == '__main__':
-    app.run_server(host="0.0.0.0", debug=True)
+    app.run_server(host="0.0.0.0")

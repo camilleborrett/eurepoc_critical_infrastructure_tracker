@@ -3,6 +3,7 @@ from dash import html, dcc
 import dash_mantine_components as dmc
 from dash_iconify import DashIconify
 from server.utils import graph_config, generate_year_slider
+from datetime import datetime, date
 
 
 button_group = dbc.ButtonGroup(
@@ -73,8 +74,11 @@ initiators_section = dbc.Row([
         dbc.Col([
             html.H5(id="initiators-section-aggregate-title", style={"text-align": "center"}),
             html.H6(id="initiators-section-aggregate-sector-year", style={"text-align": "center"}),
-            dcc.Graph(id="initiators-section-aggregate-graph",
-                      config=graph_config("EuRepoC-Type-of-initiators-by-country-of-origin")),
+            dcc.Graph(
+                id="initiators-section-aggregate-graph",
+                config=graph_config("EuRepoC-Type-of-initiators-by-country-of-origin"),
+                style={"height": "570px"}
+            ),
         ], xl=7),
         dbc.Col([
             html.H5(id="initiators-section-table-title", style={"text-align": "center"}),
@@ -93,7 +97,7 @@ initiators_section = dbc.Row([
                 html.A("Heidelberg Institute for International Conflict Research (HIIK)",
                        href="https://hiik.de/?lang=en", target="_blank", style={"color": "black"}),
                 html.Span(" Conflict Barometer. The pie chart shows the number of incidents linked to different offline conflicts \
-                for incidents added to the database since January 2023. The horizontal bar chart shows the proportion \
+                for incidents added to the database "), html.Span(html.B("since January 2023")), html.Span(". The horizontal bar chart shows the proportion \
                 of these incidents impacting each critical infrastructure sector, while the vertical bar chart shows \
                 the types of inititiators attributed to these incidents. Click on a a section of the pie chart \
                 to filter the data across the other charts for the chosen conflict. Similarly, by clicking on \
@@ -102,6 +106,22 @@ initiators_section = dbc.Row([
             ], style={"text-align": "left", "padding-top": "10px", "font-weight": "400"}
             )
         ], xl=10, md=12),
+    ]),
+    dbc.Row([
+        dbc.Col([
+            html.Span(html.B("Select an incident start date range")),
+            html.Br(),
+            html.Small(html.I("Note that information on offline conflicts is recorded only for incidents added to the database since January 2023. However, these incidents may have a start date prior to 2023.")),
+            dmc.DateRangePicker(
+                id="initiators-section-date-range-picker",
+                #label="Select an incident start date range",
+                #description="Note that we record related offline conflicts for incidents added to the database only since January 2023. However, these may have a start date prior to 2023.",
+                minDate=date(2000, 1, 1),
+                value=[date(2000, 1, 1), datetime.now().date()],
+                amountOfMonths=2,
+                style={"width": 400},
+            ),
+        ]),
     ]),
     dbc.Row([
         dbc.Col([

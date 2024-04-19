@@ -237,6 +237,8 @@ class Types:
     def initialize_callbacks(self):
         self.aggregate_graph()
         self.impact_types_graphs()
+        self.reset_year_slider()
+        self.reset_drop_downs()
         self.techniques_graph()
 
     def aggregate_graph(self):
@@ -261,7 +263,7 @@ class Types:
             default_impact_subtitle = generate_graph_subtitle(text=" Click on sectors in the bar chart to filter graphs.")
 
             triggered_id = ctx.triggered_id
-            if triggered_id == self.reset_button or triggered_id == self.year_slider_id:
+            if triggered_id == self.reset_button or triggered_id == self.year_slider_id or triggered_id == "selected-country":
                 self.last_selected = None
                 df_filtered = filter_data(self.df.copy(deep=True), selected_country, selected_year)
                 if df_filtered.empty:
@@ -332,6 +334,18 @@ class Types:
 
                 return aggregate_fig, impact_fig, json.dumps(self.last_selected), year_title, aggregate_subtitle, year_title, impact_subtitle
 
+    def reset_year_slider(self):
+        @self.app.callback(
+            Output(self.year_slider_id, "value"),
+            Input("selected-country", "value"),
+            State(self.year_slider_id, "value")
+        )
+        def reset_year_slider(selected_country, current_year):
+            triggered_id = ctx.triggered_id
+            if triggered_id == "selected-country":
+                return 2025
+            return current_year
+
     def impact_types_graphs(self):
         @self.app.callback(
             Output(self.intelligence_impact_graph_id, 'figure'),
@@ -354,7 +368,7 @@ class Types:
                 n_clicks
         ):
             triggered_id = ctx.triggered_id
-            if triggered_id == self.reset_button or triggered_id == self.year_slider_id:
+            if triggered_id == self.reset_button or triggered_id == self.year_slider_id or triggered_id == "selected-country":
                 impact_graph_click_data = None
                 aggregate_graph_click_data = None
                 df_clean = filter_data(self.df.copy(deep=True), selected_country, selected_year)
@@ -427,6 +441,20 @@ class Types:
                 )
 
             return intell_fig, functional_fig, subtitle, subtitle
+
+    def reset_drop_downs(self):
+        @self.app.callback(
+            Output(self.techniques_dropdown_sectors_id, 'value'),
+            Output(self.techniques_dropdown_types_id, 'value'),
+            [Input('selected-country', 'value')],
+            [State(self.techniques_dropdown_sectors_id, 'value'),
+             State(self.techniques_dropdown_types_id, 'value')]
+        )
+        def reset_drop_downs(selected_country, current_sector_value, current_type_value):
+            triggered_id = ctx.triggered_id
+            if triggered_id == "selected-country":
+                return "all", "all"
+            return current_sector_value, current_type_value
 
     def techniques_graph(self):
         @self.app.callback(

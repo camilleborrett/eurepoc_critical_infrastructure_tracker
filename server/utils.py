@@ -1,6 +1,7 @@
 import plotly.graph_objects as go
 from dash import dcc
 import pandas as pd
+from datetime import datetime
 
 
 sectors_color_map = {
@@ -80,7 +81,7 @@ def generate_year_slider(id_name=None):
     return year_slider
 
 
-def filter_data(df, selected_country, selected_year=None):
+def filter_data(df, selected_country, selected_year=None, date_range=None):
     states_codes = {
         "Global (states)": None,
         "Asia (states)": "ASIA",
@@ -117,6 +118,13 @@ def filter_data(df, selected_country, selected_year=None):
     if selected_year and selected_year != 2025:
         df["start_date"] = pd.to_datetime(df["start_date"])
         df = df[df["start_date"].dt.year == selected_year]
+
+    if date_range:
+        if date_range[0] == "2000-01-01" and date_range[1] == str(datetime.now().date()):
+            df = df
+        else:
+            df["start_date"] = pd.to_datetime(df["start_date"])
+            df = df[(df["start_date"] >= date_range[0]) & (df["start_date"] <= date_range[1])]
 
     return df
 

@@ -12381,7 +12381,7 @@ thead th {
 }
 
 .transition-container.transition-container-intro {
-    height: 100vh;
+    min-height: 100vh;
     background-image: url('/assets/intro-background.png'); /* /assets/background_image.png */
 }
 

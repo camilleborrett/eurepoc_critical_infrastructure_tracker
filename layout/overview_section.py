@@ -39,7 +39,8 @@ overview_section = dbc.Row([
             ], style={"text-align": "center"}),
             dcc.Graph(
                 id="overview-section-aggregate-graph",
-                config=graph_config("EuRepoC_top_targeted_critical_infrastructure_sectors")
+                config=graph_config("EuRepoC_top_targeted_critical_infrastructure_sectors"),
+                style={"height": "480px"}
             ),
         ], xl=6),
         dbc.Col([
@@ -47,7 +48,8 @@ overview_section = dbc.Row([
             dcc.Store(id="overview-section-bar-label-store", data=[]),
             dcc.Graph(
                 id="overview-section-evolution-graph",
-                config=graph_config("EuRepoC_targeted_critical_infrastructure_sectors_timeline")
+                config=graph_config("EuRepoC_targeted_critical_infrastructure_sectors_timeline"),
+                style={"height": "480px"}
             ),
             html.Div([
                 dmc.Switch(
@@ -92,6 +94,6 @@ overview_section = dbc.Row([
                 id="overview-section-sunburst-chart",
                 config=graph_config("EuRepoC_targeted_organisation_types_per_sector"),
             )
-        ], style={"height": "500px"})
+        ], style={"height": "510px"})
     ], style={"padding-bottom": "20px"}),
 ], className="background-container background-container-overview page-padding")

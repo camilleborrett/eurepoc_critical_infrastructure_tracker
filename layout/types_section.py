@@ -141,8 +141,10 @@ types_section = dbc.Row([
                 html.Span(id="types-section-aggregate-title-year")
             ], style={"text-align": "center"}),
             html.P(id="types-section-aggregate-subtitle", style={"text-align": "center"}),
-            dcc.Graph(id="types-section-aggregate-graph",
-                      config=graph_config("EuRepoC-top-attack-types-by-sector")),
+            dcc.Graph(
+                id="types-section-aggregate-graph",
+                config=graph_config("EuRepoC-top-attack-types-by-sector"),
+                style={"height": "550px"}),
             html.P(html.I("'Other' includes hijacking with misuse and hijacking without misuse operations."), style={"text-align": "center", "font-size": "0.8rem"}),
         ], xl=6, style={"padding-top": "20px"}),
         dbc.Col([
@@ -153,7 +155,7 @@ types_section = dbc.Row([
                         html.Span(id="types-section-impact-title-year")
                     ], style={"text-align": "center"}),
                     html.P(id="types-section-impact-subtitle", style={"text-align": "center"}),
-                    dcc.Graph(id="types-section-impact-graph", config=graph_config("EuRepoC-impact-types")),
+                    dcc.Graph(id="types-section-impact-graph", config=graph_config("EuRepoC-impact-types"), style={"height": "300px"}),
                     dcc.Store(id="types-section-last-selected", data=[]),
                 ])
             ]),
@@ -180,8 +182,8 @@ types_section = dbc.Row([
                             )
                         ], style={"display": "inline-block"}),
                     ], style={"text-align": "center"}),
-                    html.B(id="types-section-intell-subtitle", style={"text-align": "center", "padding-bottom": "10px"}),
-                    dcc.Graph(id="types-section-intelligence-impact-graph", config=graph_config("EuRepoC-intelligence-impact"))
+                    html.P(html.B(id="types-section-intell-subtitle"), style={"text-align": "center"}),
+                    dcc.Graph(id="types-section-intelligence-impact-graph", config=graph_config("EuRepoC-intelligence-impact"), style={"height": "300px"})
                 ], md=6),
                 dbc.Col([
                     html.H5([
@@ -204,7 +206,7 @@ types_section = dbc.Row([
                             )
                         ], style={"display": "inline-block"}),
                     ], style={"text-align": "center"}),
-                    html.B(id="types-section-functional-subtitle", style={"text-align": "center", "padding-bottom": "10px"}),
+                    html.P(html.B(id="types-section-functional-subtitle"), style={"text-align": "center"}),
                     dcc.Graph(id="types-section-functional-impact-graph", config=graph_config("EuRepoC-functional-impact"))
                 ], md=6)
             ], style={"padding": "20px 0px 0px 0px"}),
