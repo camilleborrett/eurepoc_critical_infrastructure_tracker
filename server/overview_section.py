@@ -61,6 +61,7 @@ evolution_plot_layout = {
         "zeroline": False,
         "linecolor": 'rgba(225,225,225,0.4)',
         "gridcolor": 'rgba(225,225,225,0.4)',
+        "range": [0, None],
     },
     "yaxis2": {
         "title": "Intensity",
@@ -71,7 +72,8 @@ evolution_plot_layout = {
         "linecolor": 'rgba(225,225,225,0.4)',
         "gridcolor": 'rgba(225,225,225,0.4)',
         "overlaying": "y",
-        "side": "right"
+        "side": "right",
+        "range": [0, None],
     },
     "margin": {'l': 10, 'r': 0, 't': 10, 'b': 10},
     "height": 450,
@@ -82,7 +84,7 @@ evolution_plot_layout = {
 def generate_plot_data(data, moving_average=False):
     data = data.copy()
     if moving_average:
-        data = data[data["added_to_db"] > "2022-08-15"]
+        data = data[data["added_to_db"] >= "2023-01-01"]
         data = data.groupby(['added_to_db']).agg({"id": "nunique", "weighted_intensity": "mean"}).reset_index()
         data['value_moving_avg'] = data['id'].rolling(window=30, min_periods=1).mean()
         data['intensity_moving_avg'] = data['weighted_intensity'].rolling(window=30, min_periods=1).mean()
@@ -132,8 +134,7 @@ def generate_plot(data, fig, moving_average=False, selected_sector=None, len_sec
             name=f'{name}',
             line=dict(color=color),
             hovertemplate=hovertemplate_count
-        ),
-        secondary_y=False
+        )
     )
     fig.add_trace(
         go.Scatter(
@@ -144,9 +145,9 @@ def generate_plot(data, fig, moving_average=False, selected_sector=None, len_sec
             name=f'Intensity',
             line=dict(color=color, dash='dot'),
             hovertemplate=hovertemplate_intensity,
-            visible=visibility
-        ),
-        secondary_y=True,
+            visible=visibility,
+            yaxis="y2"
+        )
     )
 
     fig.update_layout(showlegend=True)
@@ -235,6 +236,7 @@ class OverviewIntensity:
         )
         def generate_graph(selected_country, selected_bars):
             callback_data = self.df.copy(deep=True)
+            callback_data = callback_data[~callback_data["receiver_subcategory"].isin(["Not available", "Other"])]
             callback_data = filter_data(callback_data, selected_country)
 
             if callback_data.empty:
@@ -262,18 +264,27 @@ class OverviewIntensity:
     def evolution_graph(self):
         @self.app.callback(
             Output(self.evolution_graph_id, 'figure'),
+            Output('overview-section-evolution-graph-title', 'children'),
             Input('selected-country', 'value'),
             Input(self.bar_label_store_id, 'data'),
             Input("toggle-switch", "checked")
         )
         def generate_timeline(selected_country, selected_bars, toggle):
             callback_data = self.df.copy(deep=True)
+            callback_data = callback_data[~callback_data["receiver_subcategory"].isin(["Not available", "Other"])]
             callback_data = filter_data(callback_data, selected_country)
 
-            if callback_data.empty:
-                return empty_figure()
+            country = selected_country if selected_country != "Global (states)" else "all countries"
+
+            if toggle:
+                title = f"Cumulative number of attacks disclosed since Jan 2023 in {country}"
             else:
-                fig = make_subplots(specs=[[{"secondary_y": True}]])
+                title = f"Rolling average number of attacks disclosed since Jan 2023 in {country}"
+
+            if callback_data.empty:
+                return empty_figure(), title
+            else:
+                fig = go.Figure()
                 if selected_bars and len(selected_bars) > 0 and not toggle:
                     for sector in selected_bars:
                         selected_sector = sector
@@ -305,7 +316,8 @@ class OverviewIntensity:
                     callback_data = generate_plot_data(callback_data)
                     fig = generate_plot(callback_data, fig)
 
-                return fig
+
+                return fig, title
 
     def sunburst_chart(self):
         @self.app.callback(
@@ -314,6 +326,7 @@ class OverviewIntensity:
         )
         def generate_sunburst(selected_country):
             callback_data = self.subtype_df.copy(deep=True)
+            callback_data = callback_data[~callback_data["receiver_subcategory"].isin(["Not available", "Other"])]
             callback_data = filter_data(callback_data, selected_country)
 
             callback_data = callback_data.groupby(["receiver_subcategory", "ci_subtype"]).agg({"id": "nunique"}).reset_index()

@@ -237,7 +237,7 @@ class QueryData:
 
         chosen_types = ["Data theft", "DDoS/Defacement", "Ransomware", "Wiper", "Hack and leak", "Other"]
         df['type_clean'] = df['type_clean'].apply(lambda x: x if x in chosen_types else "Other")
-        df = df[~df["receiver_subcategory"].isin(["Not available", "Other"])]
+        df['receiver_subcategory'] = df['receiver_subcategory'].apply(lambda x: "Other" if x == "Not available" else x)
         df['weighted_intensity'] = pd.to_numeric(df['weighted_intensity'], errors='coerce')
 
         df = df.merge(iso_codes, left_on="initiator_country_most_common", right_on="country_name", how="left")

@@ -3,11 +3,29 @@ from dash import ctx, html
 import plotly.graph_objects as go
 import re
 import json
+import pandas as pd
 from dash_iconify import DashIconify
 from server.utils import filter_data, empty_figure, incident_types_color_map
 
 
 chosen_types = ["Data theft", "DDoS/Defacement", "Ransomware", "Wiper", "Hack and leak", "Other"]
+
+mitre_impact_definitions = {
+    "Unknown": "",
+    "Network Denial of Service": "Attacks to degrade or block the availability of targeted resources to users.<br>Network DoS can be performed by exhausting the network bandwidth services rely on.",
+    "Data Encrypted for Impact": "Encryption of data on target systems to interrupt availability to system and network resources.<br>Stored data may be rendered inaccessible by encrypting files or data on local and remote drives<br>while withholding access to a decryption key.",
+    "Data Manipulation": "Insertion, deletion, or manipulation of data in order to influence external outcomes or hide activity,<br>thus threatening the integrity of the data.",
+    "Data Destruction": "Destruction of data and files on specific systems to interrupt availability to systems<br>, services, and network resources. Data destruction is likely to render<br>stored data irrecoverable by forensic<br>techniques through overwriting files or data on local and remote drives.",
+    "Defacement": "Alteration of visual content within or outside an enterprise network,<br>thus compromising the original content's integrity.",
+    "Account Access Removal": "Blocking legitimate user access to a system or network,<br>through deleting or locking accounts, changing credentials,<br>and enforcing reboots to activate these changes.",
+    "Disk Wipe": "Deletion or damage to data on disks,<br>this can involve overwriting or wiping parts of disks,<br>or even erasing entire disks.",
+    "Endpoint Denial of Service": "Disruption or blocking availability of user end services,<br>by exhausting the host system resources or exploiting<br>the system to cause a persistent crash condition.",
+    "Service Stop": "Stop or disabling services on a system<br>to render those services unavailable to legitimate users.",
+    "Resource Hijacking": "Exploitation of the resources of co-opted systems<br>to complete resource-intensive tasks,<br>which may impact system and/or hosted service availability.",
+    "System Shutdown/Reboot": "Shutdown/reboot of systems to interrupt access to,<br>or aid in the destruction of, those systems."
+}
+
+mitre_impact_definitions = pd.DataFrame(mitre_impact_definitions.items(), columns=["impact", "definition"])
 
 def generate_graph_subtitle(default=True, text=None):
     if default:
@@ -103,10 +121,11 @@ def generate_impact_graph(data=None, clicked_category=None, clicked_type=None, c
 
     df_group = data.groupby("impact").agg({"id": "nunique"}).reset_index()
     df_group = df_group.sort_values(by="id", ascending=False)
+    df_group = df_group.merge(mitre_impact_definitions, on="impact")
 
-    fig = go.Figure(data=[go.Bar(x=df_group["impact"], y=df_group["id"])])
+    fig = go.Figure(data=[go.Bar(x=df_group["impact"], y=df_group["id"], customdata=df_group["definition"])])
     fig.update_traces(marker_color='#668088', marker_line_color='#002C38',
-                      marker_line_width=1.5, opacity=1, hovertemplate='%{x}<br>%{y} incidents<extra></extra>')
+                      marker_line_width=1.5, opacity=1, hovertemplate='<b>%{x}</b><br><b>%{y}</b> incidents<br>%{customdata}<extra></extra>')
 
     fig.update_layout(
         plot_bgcolor='rgba(0,0,0,0)',
@@ -212,7 +231,7 @@ class Types:
             last_selected_stack=None
     ):
         self.app = app
-        self.df = df
+        self.df = df[~df["receiver_subcategory"].isin(["Not available", "Other"])]
         self.intensity = intensity
         self.aggregate_graph_id = aggregate_graph_id
         self.aggregate_graph_title_year_id = aggregate_graph_title_year_id

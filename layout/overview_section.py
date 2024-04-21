@@ -18,10 +18,13 @@ overview_section = dbc.Row([
         dbc.Col([
             html.H3("What are the most frequently targeted critical infrastructure sectors?"),
             html.P(
-                "The bar chart shows the aggregate number of attacks recorded by EuRepoC per sector since 2000. \
-                 While the timeline shows the rolling average number of attacks publicly disclosed over 30 days \
-                 since January 2023, along with the rolling average intensity of these attacks also over 30 days. \
-                 Click on the bars to display and compare the timeline for each sector.",
+                "The bar chart displays the aggregate number of cyberattacks recorded by EuRepoC per sector \
+                since January 2000. The accompanying timeline shows the average number of cyberattacks disclosed \
+                each day, calculated over a rolling period of 30 days from a given point in time. \
+                A straight line at any value, such as 1, indicates a constant average number of disclosed incidents \
+                per day over time. Please note that the timeline only includes incidents publicly disclosed \
+                since January 2023, due to a change in methodology. Click on the bars to display and compare \
+                the timeline data for each sector.",
                 style={"text-align": "left", "padding-top": "10px", "padding-bottom": "20px", "font-weight": "400"}
             )
         ], xl=10, md=12)

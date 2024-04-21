@@ -27,11 +27,36 @@ button_to_sector = {
     "waste-water-management-button": "Waste Water Management"
 }
 
+apt_profiles = {
+    "Lazarus Group": "https://eurepoc.eu/publication/apt-profile-lazarus-group/",
+    "APT3/Gothic Panda": "https://eurepoc.eu/publication/apt-profile-apt3-boyusec/",
+    "APT1/Comment Crew": "https://eurepoc.eu/publication/apt-profile-apt-1/",
+    "APT28": "https://eurepoc.eu/publication/apt-profile-apt-28/",
+    "Cozy Bear/APT29": "https://eurepoc.eu/publication/apt29-profile/",
+    "Gamaredon": "https://eurepoc.eu/publication/apt-profile-gamaredon/",
+    "Turla": "https://eurepoc.eu/publication/apt-profile-turla/",
+    "Wizard Spider": "https://eurepoc.eu/publication/apt-profile-conti-wizard-spider/",
+    "Energetic Bear": "https://eurepoc.eu/publication/apt-profile-energetic-bear/",
+    "UNC1151": "https://eurepoc.eu/publication/apt-profile-unc1151/",
+    "NSA/Equation Group": "https://eurepoc.eu/publication/apt-profile-equation-group/",
+}
+
+def create_initiator_element(row, apt_profiles):
+    key = next((k for k in apt_profiles if k in row["initiator_name"]), None)
+    if key:
+        init_name = html.A(f"  {row['initiator_name']} - {row['initiator_category_most_common']}",
+                           href=apt_profiles[key], target="_blank", style={"color": "black"})
+    else:
+        init_name = html.B(f"  {row['initiator_name']} - {row['initiator_category_most_common']}")
+
+    return init_name
 
 def filter_data_initiators(df, click_button, initiator_name=None):
     if click_button and click_button != "all-button":
         sector = button_to_sector[click_button]
         df = df[df["receiver_subcategory"] == sector]
+
+    total = df["id"].nunique()
 
     if initiator_name:
         grouper = [
@@ -63,7 +88,7 @@ def filter_data_initiators(df, click_button, initiator_name=None):
 
         df_top = df_top.sort_values(by=["total_overall", "total"], ascending=[True, True])
 
-    return df_top
+    return df_top, total
 
 
 def conflict_sectors_graph(df, click_data=None, conflict_name=None):
@@ -128,6 +153,7 @@ class Initiators:
             df,
             aggregate_graph_id,
             aggregate_graph_title_id,
+            total_cyberattacks_id,
             year_slider_id,
             table_id,
             table_title_id,
@@ -142,6 +168,7 @@ class Initiators:
         self.df = df
         self.aggregate_graph_id = aggregate_graph_id
         self.aggregate_graph_title_id = aggregate_graph_title_id
+        self.total_cyberattacks_id = total_cyberattacks_id
         self.year_slider_id = year_slider_id
         self.button_group_dict = button_to_sector
         self.table_id = table_id
@@ -165,16 +192,21 @@ class Initiators:
 
     def active_button(self):
         @self.app.callback(
+            [Output("active-button-store", "data")] +
             [Output(key, "active") for key in self.button_group_dict.keys()],
             [Input("selected-country", "value")] +
             [Input(key, "n_clicks") for key in self.button_group_dict.keys()],
-            [Input("active-button-store", "data")]
         )
         def update_button_active_state(selected_country, *args):
             button_id = ctx.triggered_id
             if not ctx.triggered or button_id == "selected-country":
-                return [True] + [False] * (len(self.button_group_dict) - 1)
-            return [button_id == key for key in self.button_group_dict.keys()]
+                active_button = "all-button"
+                active_status_list = [True] + [False] * (len(self.button_group_dict) - 1)
+                return active_button, *active_status_list
+            else:
+                active_button = button_id
+                active_status_list = [button_id == key for key in self.button_group_dict.keys()]
+                return active_button, *active_status_list
 
     def reset_year_slider(self):
         @self.app.callback(
@@ -200,26 +232,21 @@ class Initiators:
             Output(self.table_id, "children"),
             Output(self.aggregate_graph_title_id, "children"),
             Output(self.table_title_id, "children"),
-            [Input(self.year_slider_id, "value"), Input("selected-country", "value")]
-            + [Input(button_id, "n_clicks") for button_id in self.button_group_dict.keys()]
+            Output(self.total_cyberattacks_id, "children"),
+            [Input(self.year_slider_id, "value"), Input("selected-country", "value"), Input("active-button-store", "data")],
+            [State(button_id, "n_clicks") for button_id in self.button_group_dict.keys()]
         )
-        def update_aggregate_plot(year, selected_country, *args):
+        def update_aggregate_plot(year, selected_country, active_button, *args):
             callback_data = self.df.copy(deep=True)
             callback_data = filter_data(callback_data, selected_country, selected_year=year)
-            button_id = ctx.triggered_id
-            if button_id in self.button_group_dict.keys() and button_id != "selected-country":
-                df_filtered = filter_data_initiators(callback_data, button_id)
-                df_table = filter_data_initiators(callback_data, button_id, initiator_name=True)
-                sector = self.button_group_dict[button_id]
-                if sector is None:
-                    sector = "All sectors"
-            else:
-                df_filtered = filter_data_initiators(callback_data, "all-button")
-                df_table = filter_data_initiators(callback_data, "all-button", initiator_name=True)
+            df_filtered, total = filter_data_initiators(callback_data, active_button)
+            df_table, _ = filter_data_initiators(callback_data, active_button, initiator_name=True)
+            sector = self.button_group_dict[active_button]
+            if sector is None:
                 sector = "All sectors"
 
             if df_filtered.empty:
-                return empty_figure(), [], [], []
+                return empty_figure(), [], [], [], "0"
 
             else:
 
@@ -270,9 +297,10 @@ class Initiators:
 
                 list_group_items = []
                 for index, row in df_table.iterrows():
+                    initiator_name = create_initiator_element(row, apt_profiles)
                     item = dbc.ListGroupItem([
                         html.Span(html.Img(src=f"/assets/flag/{row['alpha_2_code'].lower()}.svg", style={"width": "25px"})),
-                        html.B(f"   {row['initiator_name']} - {row['initiator_category_most_common']}"),
+                        html.B(initiator_name),
                         html.Br(),
                         html.Small(f"Nb of operations: {row['total']}"),
                         html.Br(),
@@ -282,7 +310,7 @@ class Initiators:
                     ], style={"background-color": "rgba(248,249,250,0.5)", "border-color": "rgba(248,249,250,0.7)", 'font-size': '0.8rem'})
                     list_group_items.append(item)
 
-                return fig, list_group_items, f"{sector} - {year}", f"{sector} - {year}"
+                return fig, list_group_items, f"{sector} - {year}", f"{sector} - {year}", total
 
     def generate_main_conflict_graph(self):
         @self.app.callback(
@@ -324,7 +352,7 @@ class Initiators:
                 paper_bgcolor="rgba(0,0,0,0)",
                 margin=dict(l=0, r=0, t=10, b=10),
                 font=dict(color='black'),
-                height=520
+                height=600
             )
             return fig
 

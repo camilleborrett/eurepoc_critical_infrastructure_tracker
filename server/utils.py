@@ -109,8 +109,10 @@ def filter_data(df, selected_country, selected_year=None, date_range=None):
 
     if selected_country in states_codes.keys():
         selected_country = states_codes[selected_country]
-        if selected_country:
+        if selected_country and selected_country != "Global (states)":
             df = df[df["region_name"] == selected_country]
+        else:
+            df = df
 
     else:
         df = df[df["receiver_country"] == selected_country]

@@ -6,7 +6,6 @@ def update_titles(app):
         [
             Output('overview-section-main-title', 'children'),
             Output('overview-section-aggregate-graph-title', 'children'),
-            Output('overview-section-evolution-graph-title', 'children'),
             Output('types-section-main-title', 'children'),
             Output('types-section-aggregate-title', 'children'),
             Output('types-section-impact-title', 'children'),
@@ -26,10 +25,9 @@ def update_titles(app):
                 selected_country = "all countries"
             overview_section_main_title = f"Targeted critical infrastructure sectors in {selected_country}"
             overview_section_aggregate_title = f"Top targeted sectors in {selected_country}"
-            overview_section_evolution_title = f"Evolution in number of attacks disclosed overtime in {selected_country}"
             types_section_main_title = f"Types of attacks and techniques targeting {selected_country}"
             types_section_aggregate_title = f"Top attack types by sector in {selected_country}"
-            types_section_impact_title = f"Types of impact {selected_country}"
+            types_section_impact_title = f"Types of MITRE impact in {selected_country}"
             types_section_techniques_bar_title = f"MITRE Initial Access techniques used in attacks against {selected_country}"
             initiators_section_main_title = f"Top initiators of cyberattacks in {selected_country}"
             initiators_section_aggregate_title = f"Type of initiators by country of origin targeting {selected_country}"
@@ -38,10 +36,9 @@ def update_titles(app):
         else:
             overview_section_main_title = "Overview of cyber incidents"
             overview_section_aggregate_title = "Top targeted sectors"
-            overview_section_evolution_title = "Evolution in number of attacks disclosed overtime"
             types_section_main_title = "Types of attacks by sector"
             types_section_aggregate_title = "Top attack types by sector"
-            types_section_impact_title = "Type of attacks"
+            types_section_impact_title = "Type of MITRE impact"
             types_section_techniques_bar_title = "MITRE Initial Access techniques used"
             initiators_section_main_title = "Top initiators of cyberattacks"
             initiators_section_aggregate_title = "Type of initiators by country of origin"
@@ -51,7 +48,6 @@ def update_titles(app):
         return (
             overview_section_main_title,
             overview_section_aggregate_title,
-            overview_section_evolution_title,
             types_section_main_title,
             types_section_aggregate_title,
             types_section_impact_title,

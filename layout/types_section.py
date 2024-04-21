@@ -123,11 +123,14 @@ types_section = dbc.Row([
     dbc.Row([
         dbc.Col([
             html.H3("What are the most frequent types of cyberattacks against each critical infrastructure sector?"),
-            html.P(
-                "The stacked bar chart illustrates the proportion of cyberattack types per sector, \
-                while the bar charts show the specific impacts of these attacks as classified by the MITRE framework. \
-                Display the data for a specific year using the slider below. Click on the graphs to filter the data.",
-                style={"text-align": "left", "padding-top": "10px", "padding-bottom": "10px", "font-weight": "400"}
+            html.P([
+                html.Span(
+                    "The stacked bar chart illustrates the proportion of cyberattack types per sector, \
+                    while the bar charts show the specific impacts of these attacks as classified by the "),
+                html.A("MITRE ATT&CK framework", href="https://attack.mitre.org/tactics/TA0040/", target="_blank", style={"color": "black"}),
+                html.Span(". Note that EuRepoC started coding the MITRE impact of cyberattacks since November 2022. \
+                          Display the data for a specific year using the slider below. Click on the graphs to filter the data.")
+            ], style={"text-align": "left", "padding-top": "10px", "padding-bottom": "10px", "font-weight": "400"}
             )
         ], xl=10, md=12)
     ]),
@@ -162,7 +165,7 @@ types_section = dbc.Row([
             dbc.Row([
                 dbc.Col([
                     html.H5([
-                        html.Span("Intelligence impact", style={"display": "inline-block"}),
+                        html.Span("Severity of breach", style={"display": "inline-block"}),
                         html.Span([
                             dmc.Tooltip(
                                 multiline=True,
@@ -171,8 +174,9 @@ types_section = dbc.Row([
                                 transition="fade",
                                 position="right",
                                 transitionDuration=200,
-                                label="The severity of the data exfiltration"
-                                      " or data corruption (deletion/alteration)",
+                                label="EuRepoC assessment of the severity of the data exfiltration"
+                                      " or data corruption (deletion/alteration), "
+                                      "based on the sensitivity of the data affected.",
                                 children=[
                                     DashIconify(
                                         icon="ph:question",
@@ -187,7 +191,7 @@ types_section = dbc.Row([
                 ], md=6),
                 dbc.Col([
                     html.H5([
-                        html.Span("Functional impact", style={"display": "inline-block"}),
+                        html.Span("Duration of impact", style={"display": "inline-block"}),
                         html.Span([
                             dmc.Tooltip(
                                 multiline=True,
@@ -196,7 +200,7 @@ types_section = dbc.Row([
                                 transition="fade",
                                 position="right",
                                 transitionDuration=200,
-                                label="How long a target system's functionality was affected",
+                                label="EuRepoC assessment of how long the functionality of the targeted system was affected by the cyberattack.",
                                 children=[
                                     DashIconify(
                                         icon="ph:question",

@@ -73,6 +73,7 @@ initiators_callbacks = Initiators(
     df=df,
     aggregate_graph_id="initiators-section-aggregate-graph",
     aggregate_graph_title_id="initiators-section-aggregate-sector-year",
+    total_cyberattacks_id="initiators-section-total-cyberattacks",
     year_slider_id="initiators-section-year-slider",
     table_id="initiators-section-table",
     table_title_id="initiators-section-table-title-sector-year",

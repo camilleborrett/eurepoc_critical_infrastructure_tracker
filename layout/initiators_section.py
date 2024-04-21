@@ -49,17 +49,21 @@ initiators_section = dbc.Row([
     dbc.Row([
         dbc.Col([
             html.H3("What are the main threat actors targeting critical infrastructure?"),
-            html.P(
+            html.P([
+                html.Span(),
                 "Identifying the perpetrators of cyberattacks is a complex yet vital aspect of cybersecurity. \
-                As part of our broader data collection methodology, we track attribution reports and update our data \
+                As part of our broader data collection ",
+                html.A("methodology", href="https://eurepoc.eu/methodology/", target="_blank", style={"color": "black"}),
+                html.Span(", we track attribution reports and update our data \
                 as new information emerges. Although a large proportion of attacks remain unattributed, our data shows \
-                the diverse array of threat actors that target critical infrastructure sectors, \
-                ranging from advanced persistent threats (APTs), often state or state-sponsored groups, to independent \
+                the diverse array of threat actors that target critical infrastructure sectors, ranging from "),
+                html.A("advanced persistent threats (APTs)", href="https://eurepoc.eu/advanced-persistent-threats-apts/", target="_blank", style={"color": "black"}),
+                html.Span(", often state or state-sponsored groups, to independent \
                 hacker groups and criminal networks. The threat landscape also differs from sector to sector \
-                and overtime. The bar chart below displays the different types of inititiators by country of origin \
-                and a list of the most proliferic threat actors. Use the buttons to compare sectors and/or years. \
-                Please note again that a cyber operation can affect multiple target sectors.",
-                style={"text-align": "left", "padding-top": "10px", "padding-bottom": "20px", "font-weight": "400"}
+                and overtime. The bar chart below displays the different types of initiators by country of origin \
+                and a list of the most prolific threat actors. Use the buttons to compare sectors and/or years. \
+                Please note again that a cyber operation can affect multiple target sectors."),
+            ], style={"text-align": "left", "padding-top": "10px", "padding-bottom": "20px", "font-weight": "400"}
             )
         ], xl=10, md=12)
     ]),
@@ -79,6 +83,7 @@ initiators_section = dbc.Row([
                 config=graph_config("EuRepoC-Type-of-initiators-by-country-of-origin"),
                 style={"height": "570px"}
             ),
+            html.P([html.B("Total cyberattacks for selected year and sector: "), html.Span(id="initiators-section-total-cyberattacks")]),
         ], xl=7),
         dbc.Col([
             html.H5(id="initiators-section-table-title", style={"text-align": "center"}),
@@ -114,8 +119,6 @@ initiators_section = dbc.Row([
             html.Small(html.I("Note that information on offline conflicts is recorded only for incidents added to the database since January 2023. However, these incidents may have a start date prior to 2023.")),
             dmc.DateRangePicker(
                 id="initiators-section-date-range-picker",
-                #label="Select an incident start date range",
-                #description="Note that we record related offline conflicts for incidents added to the database only since January 2023. However, these may have a start date prior to 2023.",
                 minDate=date(2000, 1, 1),
                 value=[date(2000, 1, 1), datetime.now().date()],
                 amountOfMonths=2,
@@ -135,7 +138,7 @@ initiators_section = dbc.Row([
             ], style={"text-align": "center"}),
             dcc.Graph("initiators-section-conflicts-main-graph",
                       config=graph_config("EuRepoC-number-of-cyber-attacks-linked-to-offline-conflicts"),
-                      style={"height": "520px"}),
+                      style={"height": "600px"}),
         ], xl=6, style={"padding-top": "20px"}),
         dbc.Col([
             dbc.Row([

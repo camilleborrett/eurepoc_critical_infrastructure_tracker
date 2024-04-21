@@ -26,12 +26,13 @@ intro_section = html.Div([
                 html.B(id='total-incidents'),
                 " worldwide from the year 2000 to today (with a more systematic data collection since 2023)."
             ]),
-            html.P("While our data only represents the tip of the iceberg, as we record only publicly \
-            disclosed attacks, our aim is to shed light on broad trends and patterns in cyber conflict. \
-            This tracker focuses on the most commonly targeted critical infrastructure sectors overtime, \
-            the type of attacks and techniques used by threat actors along with the main attributed cyber threat \
-            actors behind these attacks. By default the page shows worldwide data however you can display all graphs \
-            for your chosen country or region.",
+            html.P("Our data shows the 'visible tip of the iceberg' of cyberattacks, focusing only on publicly \
+            disclosed attacks. While there are likely many more undisclosed/covert cyberattacks not covered by \
+            this analysis, we believe that the disclosed attacks are the most significant in shaping cybersecurity \
+            policies and public awareness. This tracker focuses on the most targeted critical infrastructure \
+            sectors overtime, the type of attacks and techniques used by threat actors along with the main attributed \
+            cyber threat actors behind these attacks. By default the page shows worldwide data however you can display \
+            all graphs for your chosen country or region.",
                    style={'font-weight': '400', "text-align": "left"},
                    className="hidden-on-mobile"
                    ),
