@@ -17,15 +17,21 @@ overview_section = dbc.Row([
     dbc.Row([
         dbc.Col([
             html.H3("What are the most frequently targeted critical infrastructure sectors?"),
-            html.P(
+            html.P([
                 "The bar chart displays the aggregate number of cyberattacks recorded by EuRepoC per sector \
                 since January 2000. The accompanying timeline shows the average number of cyberattacks disclosed \
-                each day, calculated over a rolling period of 30 days from a given point in time. \
-                A straight line at any value, such as 1, indicates a constant average number of disclosed incidents \
+                each day, calculated over a rolling period of 30 days from a given point in time, along with the rolling ",
+                html.A("average intensity",
+                       href="https://eurepoc.eu/methodology/#intensity-indicator",
+                       target="_blank",
+                       style={"color": "black"}
+                ),
+                " of attacks. A straight line at any value, such as 1, indicates a constant average number of disclosed incidents \
                 per day over time. Please note that the timeline only includes incidents publicly disclosed \
                 since January 2023, due to a change in methodology. Click on the bars to display and compare \
-                the timeline data for each sector.",
-                style={"text-align": "left", "padding-top": "10px", "padding-bottom": "20px", "font-weight": "400"}
+                the timeline data for each sector. Click the toggle button under the timeline graph to display the \
+                cumulative number of incidents disclosed since January 2023 as opposed to the rolling average."
+            ], style={"text-align": "left", "padding-top": "10px", "padding-bottom": "20px", "font-weight": "400"}
             )
         ], xl=10, md=12)
     ]),
@@ -45,6 +51,8 @@ overview_section = dbc.Row([
                 config=graph_config("EuRepoC_top_targeted_critical_infrastructure_sectors"),
                 style={"height": "480px"}
             ),
+            html.P(html.I("Note that one incident may target multiple sectors."),
+                   style={"text-align": "center", "font-size": "0.8rem"}),
         ], xl=6),
         dbc.Col([
             html.H5(id="overview-section-evolution-graph-title", style={"text-align": "center", 'margin-bottom': '2.8rem'}),
@@ -84,9 +92,12 @@ overview_section = dbc.Row([
             html.P(
                 "The pie chart shows the types of organisations within each critical infrastructure sector \
                 most targeted by cyberattacks. As opposed to the bar chart above which shows the number of incidents \
-                per sector, the pie shows the number of targeted organisations per sector - one incident may target \
-                multiple organisations from the same sector. Click on a section on a sector on the pie to \
-                expand the graph for that sector.",
+                per sector, the pie shows the number of targeted organisations per sector, where a single incident may \
+                affect multiple organisations within the same sector. Please note, however, that for some cyber \
+                operations no specific targeted organisations could be identified on the basis of the publicly \
+                disclosed information, but only the broader targeted sector. Such cases are counted as one \
+                organisation in the chart below, often as 'Unknown'. Click on a section on a sector on the pie to expand the \
+                graph for that sector.",
                 style={"text-align": "left", "padding-top": "10px", "padding-bottom": "20px", "font-weight": "400"}
             )
         ], xl=10, lg=12)

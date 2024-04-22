@@ -101,6 +101,7 @@ class QueryData:
             outerjoin(self.Regions, self.Regions.region_id == self.Country_regions.c.region_id)
 
         df = pd.read_sql_query(query.statement, self.engine)
+        df = df[df["receiver_subcategory"].notna()].drop_duplicates()
         session.close()
         return df
 
