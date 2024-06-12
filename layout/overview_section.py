@@ -97,7 +97,7 @@ overview_section = dbc.Row([
                 operations no specific targeted organisations could be identified on the basis of the publicly \
                 disclosed information, but only the broader targeted sector. Such cases are counted as one \
                 organisation in the chart below, often as 'Unknown'. Click on a section on a sector on the pie to expand the \
-                graph for that sector.",
+                graph for that sector. In addition, please note that we do not code the subsectors as part of our standard human-coded pipeline. The sectors listed below are extracted using a Large Language Model (LLM), so a margin of error is possible.",
                 style={"text-align": "left", "padding-top": "10px", "padding-bottom": "20px", "font-weight": "400"}
             )
         ], xl=10, lg=12)
